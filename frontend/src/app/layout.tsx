@@ -9,6 +9,7 @@ import {
   UserButton,
 } from "@clerk/nextjs";
 import "./globals.css";
+import Logo from "@/components/Logo";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,7 +39,8 @@ export default function RootLayout({
       >
         <body className="min-h-full flex flex-col">
           <header className="flex items-center gap-6 px-6 py-4 border-b border-black/10 dark:border-white/10">
-            <Link href="/" className="font-semibold tracking-tight">
+            <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight">
+              <Logo />
               Briefcase
             </Link>
             <Show when="signed-in">
