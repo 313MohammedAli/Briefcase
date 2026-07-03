@@ -24,7 +24,8 @@ class JobApplication(models.Model):
         dimensions=settings.EMBEDDING_DIMENSIONS, null=True, blank=True
     )
 
-    # Structured JSON: {"concise": "...", "detailed": "...", "enthusiastic": "..."}
+    # Paragraph arrays per variant, so the UI can regenerate one paragraph
+    # at a time: {"concise": ["...", ...], "detailed": [...], "enthusiastic": [...]}
     generated_cover_letters = models.JSONField(default=dict, blank=True)
     selected_variant = models.CharField(max_length=20, blank=True)
 

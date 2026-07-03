@@ -30,3 +30,18 @@ def embed_text(text: str) -> list[float] | None:
         input=text,
     )
     return response.data[0].embedding
+
+
+def embed_texts(texts: list[str]) -> list[list[float]] | None:
+    """Embeds a batch of strings in one API call. Same no-key fallback as embed_text."""
+    if not texts:
+        return []
+    if not settings.OPENAI_API_KEY:
+        logger.warning("OPENAI_API_KEY not set; skipping embedding generation")
+        return None
+
+    response = _get_client().embeddings.create(
+        model=settings.OPENAI_EMBEDDING_MODEL,
+        input=texts,
+    )
+    return [item.embedding for item in response.data]

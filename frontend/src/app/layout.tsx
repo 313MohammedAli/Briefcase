@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Geist, Geist_Mono } from "next/font/google";
 import {
   ClerkProvider,
@@ -36,14 +37,29 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       >
         <body className="min-h-full flex flex-col">
-          <header className="flex justify-end items-center gap-4 p-4 border-b border-black/10 dark:border-white/10">
-            <Show when="signed-out">
-              <SignInButton />
-              <SignUpButton />
-            </Show>
+          <header className="flex items-center gap-6 px-6 py-4 border-b border-black/10 dark:border-white/10">
+            <Link href="/" className="font-semibold tracking-tight">
+              Briefcase
+            </Link>
             <Show when="signed-in">
-              <UserButton />
+              <nav className="flex items-center gap-4 text-sm text-zinc-600 dark:text-zinc-400">
+                <Link href="/experience" className="hover:text-zinc-900 dark:hover:text-zinc-100">
+                  Experience Bank
+                </Link>
+                <Link href="/applications" className="hover:text-zinc-900 dark:hover:text-zinc-100">
+                  Applications
+                </Link>
+              </nav>
             </Show>
+            <div className="ml-auto flex items-center gap-4">
+              <Show when="signed-out">
+                <SignInButton />
+                <SignUpButton />
+              </Show>
+              <Show when="signed-in">
+                <UserButton />
+              </Show>
+            </div>
           </header>
           {children}
         </body>

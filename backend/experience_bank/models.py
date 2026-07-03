@@ -13,6 +13,7 @@ class ExperienceEntry(models.Model):
         JOB = "job", "Job"
         PROJECT = "project", "Project"
         CERTIFICATION = "certification", "Certification"
+        EDUCATION = "education", "Education"
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     owner = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="experience_entries")
