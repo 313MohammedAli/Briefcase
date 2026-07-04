@@ -111,36 +111,36 @@ export default function CoverLetterPanel({
   };
 
   return (
-    <section className="rounded-xl border border-black/10 dark:border-white/15 p-5">
+    <section className="rounded-xl border border-leather-100 p-5">
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
         <h2 className="font-medium">Cover letter</h2>
         <div className="flex items-center gap-2">
           <button
             onClick={() => void exportFile("pdf")}
             disabled={exporting || paragraphs.length === 0}
-            className="rounded-md border border-black/15 dark:border-white/20 px-3 py-1.5 text-xs disabled:opacity-50"
+            className="rounded-md border border-leather-200 px-3 py-1.5 text-xs disabled:opacity-50"
           >
             Export PDF
           </button>
           <button
             onClick={() => void exportFile("docx")}
             disabled={exporting || paragraphs.length === 0}
-            className="rounded-md border border-black/15 dark:border-white/20 px-3 py-1.5 text-xs disabled:opacity-50"
+            className="rounded-md border border-leather-200 px-3 py-1.5 text-xs disabled:opacity-50"
           >
             Export DOCX
           </button>
         </div>
       </div>
 
-      <div className="flex gap-1 mb-4 rounded-lg bg-zinc-100 dark:bg-zinc-900 p-1 w-fit">
+      <div className="flex gap-1 mb-4 rounded-lg bg-leather-100 p-1 w-fit">
         {COVER_LETTER_VARIANTS.map((v) => (
           <button
             key={v}
             onClick={() => void switchVariant(v)}
             className={`rounded-md px-3 py-1.5 text-sm ${
               v === variant
-                ? "bg-white dark:bg-zinc-700 shadow-sm font-medium"
-                : "text-zinc-600 dark:text-zinc-400"
+                ? "bg-white shadow-sm font-medium"
+                : "text-leather-600"
             }`}
           >
             {VARIANT_LABELS[v]}
@@ -149,7 +149,7 @@ export default function CoverLetterPanel({
       </div>
 
       {paragraphs.length === 0 ? (
-        <p className="text-sm text-zinc-500">No letter generated for this variant yet.</p>
+        <p className="text-sm text-leather-500">No letter generated for this variant yet.</p>
       ) : (
         <div className="space-y-3">
           {paragraphs.map((paragraph, i) => (
@@ -162,13 +162,13 @@ export default function CoverLetterPanel({
                   setDraft(next);
                 }}
                 rows={Math.max(2, Math.ceil(paragraph.length / 90))}
-                className="w-full rounded-md border border-transparent hover:border-black/10 dark:hover:border-white/15 focus:border-black/20 dark:focus:border-white/25 bg-transparent px-3 py-2 text-sm leading-relaxed resize-none focus:outline-none"
+                className="w-full rounded-md border border-transparent hover:border-leather-100 focus:border-leather-300 bg-transparent px-3 py-2 text-sm leading-relaxed resize-none focus:outline-none"
               />
               <button
                 onClick={() => void regenerate(i)}
                 disabled={regenerating !== null}
                 title="Regenerate this paragraph"
-                className="absolute -right-1 top-1 opacity-0 group-hover:opacity-100 rounded-md border border-black/15 dark:border-white/20 bg-white dark:bg-zinc-900 px-2 py-1 text-xs disabled:opacity-50 transition-opacity"
+                className="absolute -right-1 top-1 opacity-0 group-hover:opacity-100 rounded-md border border-leather-200 bg-white px-2 py-1 text-xs disabled:opacity-50 transition-opacity"
               >
                 {regenerating === i ? "…" : "↻ Regenerate"}
               </button>
@@ -182,13 +182,13 @@ export default function CoverLetterPanel({
           <button
             onClick={() => void saveEdits()}
             disabled={saving}
-            className="rounded-lg bg-black text-white dark:bg-white dark:text-black px-4 py-2 text-sm font-medium disabled:opacity-50"
+            className="rounded-lg bg-leather-700 text-white px-4 py-2 text-sm font-medium disabled:opacity-50"
           >
             {saving ? "Saving…" : "Save edits"}
           </button>
           <button
             onClick={() => setDraft(null)}
-            className="rounded-lg border border-black/15 dark:border-white/20 px-4 py-2 text-sm"
+            className="rounded-lg border border-leather-200 px-4 py-2 text-sm"
           >
             Discard
           </button>

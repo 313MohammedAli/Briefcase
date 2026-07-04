@@ -3,10 +3,10 @@
 import { APPLICATION_STATUSES, type ApplicationStatus } from "@/lib/types";
 
 export const STATUS_STYLES: Record<ApplicationStatus, string> = {
-  applied: "bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300",
-  interview: "bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300",
-  rejected: "bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-300",
-  offer: "bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300",
+  applied: "bg-leather-100 text-leather-800",
+  interview: "bg-blue-50 text-blue-700",
+  rejected: "bg-red-50 text-red-700",
+  offer: "bg-emerald-50 text-emerald-700",
 };
 
 export default function StatusSelect({

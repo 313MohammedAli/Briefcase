@@ -56,28 +56,28 @@ export default function ApplicationsPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Applications</h1>
-          <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
+          <p className="text-sm text-leather-600 mt-1">
             Paste a job description to generate a tailored cover letter, resume, and fit score.
           </p>
         </div>
         <Link
           href="/applications/new"
-          className="rounded-lg bg-black text-white dark:bg-white dark:text-black px-4 py-2 text-sm font-medium shrink-0"
+          className="rounded-lg bg-leather-700 text-white px-4 py-2 text-sm font-medium shrink-0"
         >
           New application
         </Link>
       </div>
 
       {error && (
-        <p className="mb-4 rounded-md bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-300 px-3 py-2 text-sm">
+        <p className="mb-4 rounded-md bg-red-50 text-red-700 px-3 py-2 text-sm">
           {error}
         </p>
       )}
 
       {applications === null ? (
-        <p className="text-sm text-zinc-500">Loading…</p>
+        <p className="text-sm text-leather-500">Loading…</p>
       ) : applications.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-black/15 dark:border-white/20 p-10 text-center text-sm text-zinc-500">
+        <div className="rounded-xl border border-dashed border-leather-200 p-10 text-center text-sm text-leather-500">
           No applications yet. Create one by pasting a job description.
         </div>
       ) : (
@@ -86,13 +86,13 @@ export default function ApplicationsPage() {
             <li key={app.id}>
               <Link
                 href={`/applications/${app.id}`}
-                className="flex items-center justify-between gap-4 rounded-xl border border-black/10 dark:border-white/15 p-5 hover:border-black/30 dark:hover:border-white/30 transition-colors"
+                className="flex items-center justify-between gap-4 rounded-xl border border-leather-100 p-5 hover:border-leather-400 transition-colors"
               >
                 <div className="min-w-0">
                   <h2 className="font-medium truncate">
-                    {app.job_title} <span className="text-zinc-500">@ {app.company}</span>
+                    {app.job_title} <span className="text-leather-500">@ {app.company}</span>
                   </h2>
-                  <p className="text-xs text-zinc-500 mt-0.5">
+                  <p className="text-xs text-leather-500 mt-0.5">
                     Created {new Date(app.created_at).toLocaleDateString()}
                   </p>
                 </div>

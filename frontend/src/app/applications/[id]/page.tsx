@@ -79,7 +79,7 @@ export default function ApplicationDetailPage({
   if (application === null && !error) {
     return (
       <main className="mx-auto w-full max-w-3xl px-6 py-10">
-        <p className="text-sm text-zinc-500">Loading…</p>
+        <p className="text-sm text-leather-500">Loading…</p>
       </main>
     );
   }
@@ -87,13 +87,13 @@ export default function ApplicationDetailPage({
   return (
     <main className="mx-auto w-full max-w-3xl px-6 py-10 space-y-5">
       <div>
-        <Link href="/applications" className="text-sm text-zinc-500 hover:underline">
+        <Link href="/applications" className="text-sm text-leather-500 hover:underline">
           ← Applications
         </Link>
       </div>
 
       {error && (
-        <p className="rounded-md bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-300 px-3 py-2 text-sm">
+        <p className="rounded-md bg-red-50 text-red-700 px-3 py-2 text-sm">
           {error}
         </p>
       )}
@@ -105,10 +105,10 @@ export default function ApplicationDetailPage({
               <h1 className="text-2xl font-semibold tracking-tight">
                 {application.job_title}
               </h1>
-              <p className="text-zinc-500">{application.company}</p>
+              <p className="text-leather-500">{application.company}</p>
               <button
                 onClick={() => setShowDescription((s) => !s)}
-                className="mt-1 text-xs text-zinc-500 hover:underline"
+                className="mt-1 text-xs text-leather-500 hover:underline"
               >
                 {showDescription ? "Hide job description" : "Show job description"}
               </button>
@@ -120,17 +120,17 @@ export default function ApplicationDetailPage({
           </div>
 
           {showDescription && (
-            <pre className="rounded-xl border border-black/10 dark:border-white/15 p-5 text-sm whitespace-pre-wrap font-sans text-zinc-700 dark:text-zinc-300 max-h-80 overflow-y-auto">
+            <pre className="rounded-xl border border-leather-100 p-5 text-sm whitespace-pre-wrap font-sans text-leather-800 max-h-80 overflow-y-auto">
               {application.job_description}
             </pre>
           )}
 
           {generating && (
-            <div className="rounded-xl border border-black/10 dark:border-white/15 p-8 text-center">
+            <div className="rounded-xl border border-leather-100 p-8 text-center">
               <p className="text-sm font-medium animate-pulse">
                 Generating cover letters, fit score, and ATS analysis…
               </p>
-              <p className="text-xs text-zinc-500 mt-1">
+              <p className="text-xs text-leather-500 mt-1">
                 Retrieving your most relevant experience and writing three variants. This
                 usually takes about 15 seconds.
               </p>
@@ -138,11 +138,11 @@ export default function ApplicationDetailPage({
           )}
 
           {!generating && !hasCoverLetters(application) && (
-            <div className="rounded-xl border border-dashed border-black/15 dark:border-white/20 p-8 text-center">
-              <p className="text-sm text-zinc-500 mb-3">Nothing generated yet.</p>
+            <div className="rounded-xl border border-dashed border-leather-200 p-8 text-center">
+              <p className="text-sm text-leather-500 mb-3">Nothing generated yet.</p>
               <button
                 onClick={() => void generate()}
-                className="rounded-lg bg-black text-white dark:bg-white dark:text-black px-4 py-2 text-sm font-medium"
+                className="rounded-lg bg-leather-700 text-white px-4 py-2 text-sm font-medium"
               >
                 Generate
               </button>
@@ -166,7 +166,7 @@ export default function ApplicationDetailPage({
                 <button
                   onClick={() => void generate()}
                   disabled={generating}
-                  className="text-xs text-zinc-500 hover:underline disabled:opacity-50"
+                  className="text-xs text-leather-500 hover:underline disabled:opacity-50"
                   title="Re-run retrieval, cover letters, fit score, and ATS analysis. Overwrites manual cover letter edits."
                 >
                   ↻ Regenerate everything

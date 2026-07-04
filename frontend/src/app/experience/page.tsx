@@ -12,7 +12,7 @@ const ENTRY_TYPES: { value: EntryType; label: string }[] = [
 ];
 
 const inputClass =
-  "w-full rounded-md border border-black/15 dark:border-white/20 bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-400";
+  "w-full rounded-md border border-leather-200 bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-leather-400";
 
 interface FormState {
   type: EntryType;
@@ -154,31 +154,31 @@ export default function ExperiencePage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Experience Bank</h1>
-          <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
+          <p className="text-sm text-leather-600 mt-1">
             Jobs, projects, certifications, and education. Each bullet is embedded and
             retrieved when generating cover letters and resumes.
           </p>
         </div>
         <button
           onClick={openNew}
-          className="rounded-lg bg-black text-white dark:bg-white dark:text-black px-4 py-2 text-sm font-medium shrink-0"
+          className="rounded-lg bg-leather-700 text-white px-4 py-2 text-sm font-medium shrink-0"
         >
           Add entry
         </button>
       </div>
 
       {error && (
-        <p className="mb-4 rounded-md bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-300 px-3 py-2 text-sm">
+        <p className="mb-4 rounded-md bg-red-50 text-red-700 px-3 py-2 text-sm">
           {error}
         </p>
       )}
 
       {editing && (
-        <div className="mb-8 rounded-xl border border-black/10 dark:border-white/15 p-5 space-y-4">
+        <div className="mb-8 rounded-xl border border-leather-100 p-5 space-y-4">
           <h2 className="font-medium">{editing === "new" ? "New entry" : "Edit entry"}</h2>
           <div className="grid grid-cols-2 gap-4">
             <label className="text-sm space-y-1">
-              <span className="text-zinc-600 dark:text-zinc-400">Type</span>
+              <span className="text-leather-600">Type</span>
               <select
                 className={inputClass}
                 value={form.type}
@@ -192,7 +192,7 @@ export default function ExperiencePage() {
               </select>
             </label>
             <label className="text-sm space-y-1">
-              <span className="text-zinc-600 dark:text-zinc-400">Title *</span>
+              <span className="text-leather-600">Title *</span>
               <input
                 className={inputClass}
                 value={form.title}
@@ -201,7 +201,7 @@ export default function ExperiencePage() {
               />
             </label>
             <label className="text-sm space-y-1">
-              <span className="text-zinc-600 dark:text-zinc-400">Organization</span>
+              <span className="text-leather-600">Organization</span>
               <input
                 className={inputClass}
                 value={form.organization}
@@ -210,7 +210,7 @@ export default function ExperiencePage() {
               />
             </label>
             <label className="text-sm space-y-1">
-              <span className="text-zinc-600 dark:text-zinc-400">Tags (comma-separated)</span>
+              <span className="text-leather-600">Tags (comma-separated)</span>
               <input
                 className={inputClass}
                 value={form.tags}
@@ -219,7 +219,7 @@ export default function ExperiencePage() {
               />
             </label>
             <label className="text-sm space-y-1">
-              <span className="text-zinc-600 dark:text-zinc-400">Start date</span>
+              <span className="text-leather-600">Start date</span>
               <input
                 type="date"
                 className={inputClass}
@@ -228,7 +228,7 @@ export default function ExperiencePage() {
               />
             </label>
             <label className="text-sm space-y-1">
-              <span className="text-zinc-600 dark:text-zinc-400">End date (blank = present)</span>
+              <span className="text-leather-600">End date (blank = present)</span>
               <input
                 type="date"
                 className={inputClass}
@@ -239,7 +239,7 @@ export default function ExperiencePage() {
           </div>
 
           <div className="space-y-2">
-            <span className="text-sm text-zinc-600 dark:text-zinc-400">
+            <span className="text-sm text-leather-600">
               Bullets — one accomplishment or responsibility each
             </span>
             {form.bullets.map((bullet, i) => (
@@ -259,7 +259,7 @@ export default function ExperiencePage() {
                         f.bullets.length > 1 ? f.bullets.filter((_, j) => j !== i) : [""],
                     }))
                   }
-                  className="text-zinc-400 hover:text-red-600 text-sm px-1 shrink-0"
+                  className="text-leather-400 hover:text-red-600 text-sm px-1 shrink-0"
                   aria-label="Remove bullet"
                 >
                   ✕
@@ -268,7 +268,7 @@ export default function ExperiencePage() {
             ))}
             <button
               onClick={() => setForm((f) => ({ ...f, bullets: [...f.bullets, ""] }))}
-              className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100"
+              className="text-sm text-leather-600 hover:text-leather-900"
             >
               + Add bullet
             </button>
@@ -278,13 +278,13 @@ export default function ExperiencePage() {
             <button
               onClick={save}
               disabled={saving}
-              className="rounded-lg bg-black text-white dark:bg-white dark:text-black px-4 py-2 text-sm font-medium disabled:opacity-50"
+              className="rounded-lg bg-leather-700 text-white px-4 py-2 text-sm font-medium disabled:opacity-50"
             >
               {saving ? "Saving…" : "Save entry"}
             </button>
             <button
               onClick={() => setEditing(null)}
-              className="rounded-lg border border-black/15 dark:border-white/20 px-4 py-2 text-sm"
+              className="rounded-lg border border-leather-200 px-4 py-2 text-sm"
             >
               Cancel
             </button>
@@ -293,9 +293,9 @@ export default function ExperiencePage() {
       )}
 
       {entries === null ? (
-        <p className="text-sm text-zinc-500">Loading…</p>
+        <p className="text-sm text-leather-500">Loading…</p>
       ) : entries.length === 0 && !editing ? (
-        <div className="rounded-xl border border-dashed border-black/15 dark:border-white/20 p-10 text-center text-sm text-zinc-500">
+        <div className="rounded-xl border border-dashed border-leather-200 p-10 text-center text-sm text-leather-500">
           No entries yet. Add your jobs, projects, certifications, and education to power
           generation.
         </div>
@@ -304,21 +304,21 @@ export default function ExperiencePage() {
           {entries.map((entry) => (
             <li
               key={entry.id}
-              className="rounded-xl border border-black/10 dark:border-white/15 p-5"
+              className="rounded-xl border border-leather-100 p-5"
             >
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <span className="text-xs uppercase tracking-wide text-zinc-500">
+                  <span className="text-xs uppercase tracking-wide text-leather-500">
                     {entry.type}
                   </span>
                   <h2 className="font-medium">
                     {entry.title}
                     {entry.organization && (
-                      <span className="text-zinc-500"> · {entry.organization}</span>
+                      <span className="text-leather-500"> · {entry.organization}</span>
                     )}
                   </h2>
                   {(entry.start_date || entry.end_date) && (
-                    <p className="text-xs text-zinc-500 mt-0.5">
+                    <p className="text-xs text-leather-500 mt-0.5">
                       {entry.start_date ?? "?"} → {entry.end_date ?? "present"}
                     </p>
                   )}
@@ -326,7 +326,7 @@ export default function ExperiencePage() {
                 <div className="flex gap-3 text-sm shrink-0">
                   <button
                     onClick={() => openEdit(entry)}
-                    className="text-zinc-600 dark:text-zinc-400 hover:underline"
+                    className="text-leather-600 hover:underline"
                   >
                     Edit
                   </button>
@@ -339,7 +339,7 @@ export default function ExperiencePage() {
                 </div>
               </div>
               {entry.bullets.length > 0 && (
-                <ul className="mt-3 list-disc pl-5 space-y-1 text-sm text-zinc-700 dark:text-zinc-300">
+                <ul className="mt-3 list-disc pl-5 space-y-1 text-sm text-leather-800">
                   {entry.bullets.map((b) => (
                     <li key={b.id ?? b.text}>{b.text}</li>
                   ))}
@@ -350,7 +350,7 @@ export default function ExperiencePage() {
                   {entry.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="rounded-full bg-zinc-100 dark:bg-zinc-800 px-2.5 py-0.5 text-xs text-zinc-700 dark:text-zinc-300"
+                      className="rounded-full bg-leather-100 px-2.5 py-0.5 text-xs text-leather-800"
                     >
                       {tag}
                     </span>
