@@ -5,7 +5,7 @@ import { useApi } from "@/lib/api";
 import type { JobApplication, TailoredResume } from "@/lib/types";
 
 const inputClass =
-  "w-full rounded-md border border-transparent hover:border-leather-100 focus:border-leather-300 bg-transparent px-3 py-2 text-sm leading-relaxed resize-none focus:outline-none";
+  "w-full field-sizing-content rounded-md border border-transparent hover:border-leather-100 focus:border-leather-300 bg-transparent px-3 py-2 text-sm leading-relaxed resize-none focus:outline-none";
 
 export default function ResumePanel({
   application,

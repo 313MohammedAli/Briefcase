@@ -151,7 +151,7 @@ export default function CoverLetterPanel({
       {paragraphs.length === 0 ? (
         <p className="text-sm text-leather-500">No letter generated for this variant yet.</p>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-3 max-h-[65vh] overflow-y-auto pr-1">
           {paragraphs.map((paragraph, i) => (
             <div key={i} className="group relative">
               <textarea
@@ -161,14 +161,14 @@ export default function CoverLetterPanel({
                   next[i] = e.target.value;
                   setDraft(next);
                 }}
-                rows={Math.max(2, Math.ceil(paragraph.length / 90))}
-                className="w-full rounded-md border border-transparent hover:border-leather-100 focus:border-leather-300 bg-transparent px-3 py-2 text-sm leading-relaxed resize-none focus:outline-none"
+                rows={Math.max(2, Math.ceil(paragraph.length / 80))}
+                className="w-full field-sizing-content rounded-md border border-transparent hover:border-leather-100 focus:border-leather-300 bg-transparent px-3 py-2 text-sm leading-relaxed resize-none focus:outline-none"
               />
               <button
                 onClick={() => void regenerate(i)}
                 disabled={regenerating !== null}
                 title="Regenerate this paragraph"
-                className="absolute -right-1 top-1 opacity-0 group-hover:opacity-100 rounded-md border border-leather-200 bg-white px-2 py-1 text-xs disabled:opacity-50 transition-opacity"
+                className="absolute right-1 top-1 opacity-0 group-hover:opacity-100 rounded-md border border-leather-200 bg-white px-2 py-1 text-xs disabled:opacity-50 transition-opacity"
               >
                 {regenerating === i ? "…" : "↻ Regenerate"}
               </button>
