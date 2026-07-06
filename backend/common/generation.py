@@ -82,11 +82,20 @@ def generate_cover_letters(job_application, experience_text: str, candidate_name
         "are their own paragraphs). Produce three variants: 'concise' (3-4 "
         "short paragraphs, direct), 'detailed' (5-6 paragraphs, expands on "
         "impact and specifics), 'enthusiastic' (4-5 paragraphs, energetic "
-        f"tone, strong motivation for this company). {HUMAN_STYLE_RULES}"
+        f"tone, strong motivation for this company). {HUMAN_STYLE_RULES} "
+        "Write in first person as the candidate; never refer to them in the "
+        "third person. Sign off with the candidate's name. If no name is "
+        "given, sign off with the literal placeholder [Your Name] so the "
+        "user can fill it in."
+    )
+    name_line = (
+        f"Candidate name: {candidate_name}"
+        if candidate_name
+        else "Candidate name: not provided (use the [Your Name] placeholder in the sign-off)"
     )
     user = (
         f"{_job_context(job_application)}\n\n"
-        f"Candidate name: {candidate_name or 'the candidate'}\n\n"
+        f"{name_line}\n\n"
         f"Candidate's relevant experience:\n{experience_text}"
     )
     letters = _structured_call(system, user, "cover_letter_variants", schema)

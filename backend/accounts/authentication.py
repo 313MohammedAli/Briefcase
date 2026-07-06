@@ -56,8 +56,17 @@ class ClerkJWTAuthentication(authentication.BaseAuthentication):
             clerk_user_id=clerk_user_id,
             defaults={"email": email, "name": name},
         )
+        # Keep the local copy in sync with Clerk; the name claim only exists
+        # once the session token is customized to include it, so pick it up
+        # whenever it appears or changes.
+        changed = []
         if email and profile.email != email:
             profile.email = email
-            profile.save(update_fields=["email"])
+            changed.append("email")
+        if name and profile.name != name:
+            profile.name = name
+            changed.append("name")
+        if changed:
+            profile.save(update_fields=changed)
 
         return (profile, None)
