@@ -187,3 +187,22 @@ class ResumeImportTests(TestCase):
             "/api/experience-entries/bulk-create/", {"entries": []}, format="json"
         )
         self.assertEqual(response.status_code, 400)
+
+
+class HumanStyleTests(TestCase):
+    def test_strip_dashes_replaces_em_and_en_dashes(self):
+        from common.generation import _strip_dashes
+
+        self.assertEqual(
+            _strip_dashes("I led the migration — a six month effort — to Django."),
+            "I led the migration, a six month effort, to Django.",
+        )
+        self.assertEqual(_strip_dashes("2019–2022 at Acme"), "2019, 2022 at Acme")
+
+    def test_strip_dashes_keeps_word_hyphens(self):
+        from common.generation import _strip_dashes
+
+        self.assertEqual(
+            _strip_dashes("Cross-functional, self-starter role"),
+            "Cross-functional, self-starter role",
+        )

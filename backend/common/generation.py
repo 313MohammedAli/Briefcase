@@ -8,12 +8,34 @@ at a time.
 """
 
 import json
+import re
 
 from django.conf import settings
 
 from .embeddings import _get_client, embed_texts
 
 COVER_LETTER_VARIANTS = ["concise", "detailed", "enthusiastic"]
+
+# Shared style rules for anything a human will submit under their own name.
+# Kept out of the per-call prompts so all letter generation stays consistent.
+HUMAN_STYLE_RULES = (
+    "Style rules, non-negotiable: write like a person, not a press release. "
+    "Plain, direct sentences with varied length; contractions where natural. "
+    "Never use em dashes or en dashes anywhere. Avoid AI-typical phrasing "
+    "such as 'I am writing to express', 'leverage', 'delve', 'passionate "
+    "about', 'aligns with', 'resonates with', 'testament to', 'showcase', "
+    "'spearheaded', or 'in today's fast-paced world'. State things "
+    "concretely instead of gesturing at enthusiasm."
+)
+
+
+def _strip_dashes(text: str) -> str:
+    """Replaces em/en dashes with commas as a hard guarantee behind the prompt.
+
+    Word-joining hyphens (e.g. 'cross-functional') are left alone.
+    """
+    text = re.sub(r"\s*[—–]\s*", ", ", text)
+    return re.sub(r",\s*,", ",", text)
 
 # Cosine similarity above which an ATS keyword counts as covered by the
 # experience bank (tuned for text-embedding-3-small keyword-vs-bullet pairs).
@@ -60,14 +82,18 @@ def generate_cover_letters(job_application, experience_text: str, candidate_name
         "are their own paragraphs). Produce three variants: 'concise' (3-4 "
         "short paragraphs, direct), 'detailed' (5-6 paragraphs, expands on "
         "impact and specifics), 'enthusiastic' (4-5 paragraphs, energetic "
-        "tone, strong motivation for this company)."
+        f"tone, strong motivation for this company). {HUMAN_STYLE_RULES}"
     )
     user = (
         f"{_job_context(job_application)}\n\n"
         f"Candidate name: {candidate_name or 'the candidate'}\n\n"
         f"Candidate's relevant experience:\n{experience_text}"
     )
-    return _structured_call(system, user, "cover_letter_variants", schema)
+    letters = _structured_call(system, user, "cover_letter_variants", schema)
+    return {
+        variant: [_strip_dashes(p) for p in paragraphs]
+        for variant, paragraphs in letters.items()
+    }
 
 
 def regenerate_paragraph(
@@ -86,7 +112,7 @@ def regenerate_paragraph(
         f"cover letter written in a {variant} tone. Rewrite ONLY the requested "
         "paragraph with a fresh take that still flows with the surrounding "
         "paragraphs, keeps the same tone, and stays truthful to the "
-        "candidate's experience."
+        f"candidate's experience. {HUMAN_STYLE_RULES}"
     )
     user = (
         f"{_job_context(job_application)}\n\n"
@@ -94,7 +120,9 @@ def regenerate_paragraph(
         f"Current letter (numbered paragraphs):\n{numbered}\n\n"
         f"Rewrite paragraph [{index}]."
     )
-    return _structured_call(system, user, "regenerated_paragraph", schema)["paragraph"]
+    return _strip_dashes(
+        _structured_call(system, user, "regenerated_paragraph", schema)["paragraph"]
+    )
 
 
 def tailor_resume(job_application, bullets) -> dict:
