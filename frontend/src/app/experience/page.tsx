@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useApi } from "@/lib/api";
 import type { EntryType, ExperienceEntry, ExperienceEntryInput } from "@/lib/types";
@@ -159,12 +160,20 @@ export default function ExperiencePage() {
             retrieved when generating cover letters and resumes.
           </p>
         </div>
-        <button
-          onClick={openNew}
-          className="rounded-lg bg-leather-700 text-white px-4 py-2 text-sm font-medium shrink-0"
-        >
-          Add entry
-        </button>
+        <div className="flex gap-2 shrink-0">
+          <Link
+            href="/experience/import"
+            className="rounded-lg border border-leather-200 text-leather-800 px-4 py-2 text-sm font-medium hover:border-leather-400 transition-colors"
+          >
+            Import resume
+          </Link>
+          <button
+            onClick={openNew}
+            className="rounded-lg bg-leather-700 text-white px-4 py-2 text-sm font-medium"
+          >
+            Add entry
+          </button>
+        </div>
       </div>
 
       {error && (

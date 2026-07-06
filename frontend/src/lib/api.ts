@@ -46,6 +46,23 @@ export function useApi() {
     [getToken]
   );
 
+  const upload = useCallback(
+    async <T>(path: string, file: File): Promise<T> => {
+      const token = await getToken();
+      const body = new FormData();
+      body.append("file", file);
+      // No Content-Type header: the browser sets the multipart boundary.
+      const res = await fetch(`${API_URL}/api${path}`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body,
+      });
+      if (!res.ok) throw new ApiError(res.status, await parseError(res));
+      return res.json() as Promise<T>;
+    },
+    [getToken]
+  );
+
   const download = useCallback(
     async (path: string, filename: string) => {
       const token = await getToken();
@@ -64,5 +81,5 @@ export function useApi() {
     [getToken]
   );
 
-  return { request, download };
+  return { request, upload, download };
 }

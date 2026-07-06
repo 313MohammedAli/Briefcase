@@ -14,6 +14,14 @@ class Profile(models.Model):
     clerk_user_id = models.CharField(max_length=255, unique=True)
     email = models.EmailField()
     name = models.CharField(max_length=255, blank=True)
+
+    # Plain text of the user's most recently uploaded resume. Kept so future
+    # tailoring can edit the user's own document (format conservation) rather
+    # than generating a fresh layout.
+    resume_text = models.TextField(blank=True)
+    resume_filename = models.CharField(max_length=255, blank=True)
+    resume_uploaded_at = models.DateTimeField(null=True, blank=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

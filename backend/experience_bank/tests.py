@@ -105,3 +105,85 @@ class PerUserScopingTests(TestCase):
         body = response.json()
         self.assertEqual(body["title"], "Side project v2")
         self.assertEqual(len(body["bullets"]), 2)
+
+
+class ResumeImportTests(TestCase):
+    def setUp(self):
+        self.owner = Profile.objects.create(clerk_user_id="user_r", email="r@x.y")
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.owner)
+
+    def _upload(self, name, content):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+
+        return self.client.post(
+            "/api/experience-entries/import-resume/",
+            {"file": SimpleUploadedFile(name, content)},
+            format="multipart",
+        )
+
+    def test_requires_api_key(self):
+        with self.settings(OPENAI_API_KEY=""):
+            response = self._upload("resume.txt", b"x" * 100)
+        self.assertEqual(response.status_code, 503)
+
+    def test_rejects_unsupported_file_type(self):
+        with self.settings(OPENAI_API_KEY="test-key"):
+            response = self._upload("resume.png", b"x" * 100)
+        self.assertEqual(response.status_code, 400)
+
+    def test_rejects_unreadable_content(self):
+        with self.settings(OPENAI_API_KEY="test-key"):
+            response = self._upload("resume.txt", b"hi")
+        self.assertEqual(response.status_code, 400)
+
+    def test_extracts_docx_text(self):
+        import io
+
+        from docx import Document
+
+        from common.resume_import import extract_text_from_upload
+
+        doc = Document()
+        doc.add_paragraph("Software Engineer at Acme Corp, 2020 to present.")
+        doc.add_paragraph("Built Django services handling millions of requests.")
+        buffer = io.BytesIO()
+        doc.save(buffer)
+        buffer.seek(0)
+        buffer.name = "resume.docx"
+        buffer.size = len(buffer.getvalue())
+        text = extract_text_from_upload(buffer)
+        self.assertIn("Acme Corp", text)
+        self.assertIn("Django services", text)
+
+    def test_bulk_create(self):
+        response = self.client.post(
+            "/api/experience-entries/bulk-create/",
+            {
+                "entries": [
+                    {
+                        "type": "job",
+                        "title": "Engineer",
+                        "organization": "Acme",
+                        "tags": ["Python"],
+                        "bullets": [{"text": "Did things", "order": 0}],
+                    },
+                    {
+                        "type": "education",
+                        "title": "BSc Computer Science",
+                        "organization": "State University",
+                        "tags": [],
+                        "bullets": [],
+                    },
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(ExperienceEntry.objects.filter(owner=self.owner).count(), 2)
+
+    def test_bulk_create_rejects_empty(self):
+        response = self.client.post(
+            "/api/experience-entries/bulk-create/", {"entries": []}, format="json"
+        )
+        self.assertEqual(response.status_code, 400)
