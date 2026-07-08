@@ -209,6 +209,16 @@ function HeroCase() {
   );
 }
 
+const STARS = [
+  { top: -18, left: -20, size: 18, delay: 0, dur: 2.2 },
+  { top: -16, right: -14, size: 13, delay: 0.05, dur: 2.6, floatDelay: -0.6 },
+  { bottom: -10, right: -22, size: 15, delay: 0.1, dur: 2.4, floatDelay: -1.2 },
+  { bottom: -12, left: -14, size: 11, delay: 0.14, dur: 2.8, floatDelay: -0.3 },
+  { top: -26, left: "52%", size: 12, delay: 0.08, dur: 2.3, floatDelay: -0.9 },
+  { top: 8, left: -26, size: 10, delay: 0.18, dur: 2.7, floatDelay: -1.5 },
+  { top: 2, right: -26, size: 14, delay: 0.12, dur: 2.5, floatDelay: -0.45 },
+];
+
 function HeroButton() {
   const [hover, setHover] = useState(false);
   return (
@@ -224,20 +234,64 @@ function HeroButton() {
         minWidth: 238,
         transformOrigin: "50% 100%",
         transition: "transform 0.25s ease",
-        transform: hover ? "scale(1.05)" : "scale(1)",
+        transform: hover ? "scale(1.07)" : "scale(1)",
+        cursor: "pointer",
       }}
     >
-      <svg width={34} height={24} viewBox="0 0 34 24" style={{ position: "absolute", top: -20, left: -16, overflow: "visible", opacity: hover ? 1 : 0, transform: hover ? "scale(1)" : "scale(0.5)", transition: "opacity 0.25s ease, transform 0.25s ease" }}>
-        <path d="M10 2l1.6 4.1L15.7 7.7l-4.1 1.6L10 13.4 8.4 9.3 4.3 7.7l4.1-1.6z" fill="#f59e0b" />
-        <path d="M26 8l1 2.5 2.5 1-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1z" fill="#f59e0b" />
-      </svg>
-      <span style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", transformOrigin: "50% 100%", transition: "transform 0.3s ease", transform: hover ? "perspective(120px) rotateX(30deg)" : "none" }}>
-        <span style={{ width: 34, height: 14, border: "3.5px solid #553923", borderBottom: "none", borderRadius: "10px 10px 0 0", boxSizing: "border-box", marginBottom: -1 }} />
-        <span style={{ width: "100%", height: 25, background: "#6f4b2f", borderRadius: "14px 14px 0 0" }} />
-      </span>
-      <span style={{ width: "100%", height: 25, background: "#6f4b2f", borderRadius: "0 0 14px 14px", transformOrigin: "50% 0%", transition: "transform 0.3s ease", transform: hover ? "perspective(120px) rotateX(-30deg)" : "none" }} />
-      <span style={{ position: "absolute", top: 14, bottom: 0, left: 0, right: 0, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 16, fontWeight: 600, zIndex: 3, padding: "0 26px", whiteSpace: "nowrap" }}>
-        Get started — it&apos;s free
+      {STARS.map((s, i) => (
+        <span
+          key={i}
+          style={{
+            position: "absolute",
+            top: s.top,
+            bottom: s.bottom,
+            left: s.left,
+            right: s.right,
+            opacity: hover ? 1 : 0,
+            transition: `opacity 0.25s ease ${s.delay}s`,
+            zIndex: 4,
+            pointerEvents: "none",
+          }}
+        >
+          <svg
+            width={s.size}
+            height={s.size}
+            viewBox="0 0 18 18"
+            style={{ display: "block", animation: hover ? `starFloat ${s.dur}s ease-in-out ${s.floatDelay ?? 0}s infinite` : "none" }}
+          >
+            <path d="M9 1l1.9 5.1L16 8l-5.1 1.9L9 15 7.1 9.9 2 8l5.1-1.9z" fill="#f59e0b" />
+          </svg>
+        </span>
+      ))}
+      {/* handle */}
+      <span style={{ width: 40, height: 16, border: "4px solid #553923", borderBottom: "none", borderRadius: "11px 11px 0 0", boxSizing: "border-box", marginBottom: -2 }} />
+      {/* case body */}
+      <span
+        style={{
+          position: "relative",
+          width: "100%",
+          background: "#6f4b2f",
+          borderRadius: 14,
+          height: 52,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          boxSizing: "border-box",
+          overflow: "hidden",
+          transition: "box-shadow 0.3s ease",
+          boxShadow: hover
+            ? "0 0 24px 4px rgba(245,158,11,.45), 0 8px 24px -8px rgba(61,40,24,.4)"
+            : "0 0 0 0 rgba(245,158,11,0)",
+        }}
+      >
+        {/* lid seam */}
+        <span style={{ position: "absolute", top: 15, left: 0, right: 0, borderTop: "2px solid rgba(0,0,0,.22)" }} />
+        {/* latches */}
+        <span style={{ position: "absolute", top: 11, left: 22, width: 14, height: 8, background: "#f59e0b", borderRadius: "2px 2px 1px 1px" }} />
+        <span style={{ position: "absolute", top: 11, right: 22, width: 14, height: 8, background: "#f59e0b", borderRadius: "2px 2px 1px 1px" }} />
+        <span style={{ position: "relative", marginTop: 12, color: "#fff", fontSize: 16, fontWeight: 600, whiteSpace: "nowrap", padding: "0 30px" }}>
+          Get started — it&apos;s free
+        </span>
       </span>
     </Link>
   );
