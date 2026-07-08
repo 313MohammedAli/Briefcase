@@ -23,3 +23,15 @@ body {
   color: var(--color-leather-900);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
+
+@keyframes sparkPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.25);
+    opacity: 0.75;
+  }
+}
