@@ -99,3 +99,30 @@ class JobApplicationApiTests(TestCase):
             f"/api/job-applications/{self.app.id}/export/?document=resume&file_format=docx"
         )
         self.assertEqual(response.status_code, 400)
+
+
+class SecurityHardeningTests(TestCase):
+    def setUp(self):
+        self.owner = Profile.objects.create(clerk_user_id="user_sec", email="s@x.y")
+        self.app = JobApplication.objects.create(
+            owner=self.owner,
+            job_title='Engineer" ; rm -rf',
+            company="Ac/me\nCorp",
+            job_description="x",
+            generated_cover_letters={"concise": ["Hi", "Body", "Bye"]},
+            selected_variant="concise",
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.owner)
+
+    def test_export_filename_is_sanitized(self):
+        response = self.client.get(
+            f"/api/job-applications/{self.app.id}/export/"
+            "?document=cover_letter&file_format=docx"
+        )
+        self.assertEqual(response.status_code, 200)
+        disposition = response["Content-Disposition"]
+        # No quotes, slashes, or newlines from the user-controlled title/company.
+        self.assertNotIn('"', disposition.split("filename=")[1][1:-1])
+        self.assertNotIn("\n", disposition)
+        self.assertNotIn("/", disposition.split("filename=")[1])

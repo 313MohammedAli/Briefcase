@@ -8,6 +8,7 @@ from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.response import Response
 
 from common.resume_import import extract_resume_entries, extract_text_from_upload
+from common.throttling import AIRateThrottle
 
 from .models import ExperienceEntry
 from .serializers import ExperienceEntrySerializer
@@ -20,7 +21,7 @@ class ExperienceEntryViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return ExperienceEntry.objects.filter(owner=self.request.user).prefetch_related("bullets")
 
-    @action(detail=False, methods=["post"], url_path="import-resume")
+    @action(detail=False, methods=["post"], url_path="import-resume", throttle_classes=[AIRateThrottle])
     def import_resume(self, request):
         """Uploads a resume file and returns proposed entries for review.
 

@@ -206,3 +206,22 @@ class HumanStyleTests(TestCase):
             _strip_dashes("Cross-functional, self-starter role"),
             "Cross-functional, self-starter role",
         )
+
+
+class UploadGuardTests(TestCase):
+    def test_docx_zip_bomb_rejected(self):
+        import io
+        import zipfile
+
+        from rest_framework.exceptions import ValidationError
+
+        from common.resume_import import extract_text_from_upload
+
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+            zf.writestr("word/document.xml", b"A" * (60 * 1024 * 1024))
+        buf.seek(0)
+        buf.name = "resume.docx"
+        buf.size = len(buf.getvalue())
+        with self.assertRaises(ValidationError):
+            extract_text_from_upload(buf)

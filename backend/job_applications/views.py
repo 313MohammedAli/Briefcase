@@ -1,3 +1,5 @@
+import re
+
 from django.conf import settings
 from django.http import HttpResponse
 from rest_framework import status as http_status
@@ -7,6 +9,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
 from common import exports
+from common.throttling import AIRateThrottle
 from common.embeddings import embed_text
 from common.generation import (
     COVER_LETTER_VARIANTS,
@@ -60,7 +63,7 @@ class JobApplicationViewSet(viewsets.ModelViewSet):
             self.request.user, job_application.job_description_embedding
         )
 
-    @action(detail=True, methods=["post"])
+    @action(detail=True, methods=["post"], throttle_classes=[AIRateThrottle])
     def generate(self, request, pk=None):
         """Full pipeline: retrieval, cover letter variants, fit score, ATS gap."""
         if (error := _require_openai()) is not None:
@@ -96,7 +99,7 @@ class JobApplicationViewSet(viewsets.ModelViewSet):
         job_application.save()
         return Response(JobApplicationSerializer(job_application).data)
 
-    @action(detail=True, methods=["post"], url_path="regenerate-paragraph")
+    @action(detail=True, methods=["post"], url_path="regenerate-paragraph", throttle_classes=[AIRateThrottle])
     def regenerate_paragraph(self, request, pk=None):
         if (error := _require_openai()) is not None:
             return error
@@ -145,7 +148,7 @@ class JobApplicationViewSet(viewsets.ModelViewSet):
         job_application.save()
         return Response(JobApplicationSerializer(job_application).data)
 
-    @action(detail=True, methods=["post"], url_path="tailor-resume")
+    @action(detail=True, methods=["post"], url_path="tailor-resume", throttle_classes=[AIRateThrottle])
     def tailor_resume(self, request, pk=None):
         if (error := _require_openai()) is not None:
             return error
@@ -226,7 +229,10 @@ class JobApplicationViewSet(viewsets.ModelViewSet):
             "pdf": "application/pdf",
             "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         }
-        slug = f"{job_application.company}-{job_application.job_title}".lower().replace(" ", "-")
+        # Slugify company/job title down to a safe ASCII charset so user input
+        # can't inject into or break the Content-Disposition header.
+        raw = f"{job_application.company}-{job_application.job_title}"
+        slug = re.sub(r"[^a-z0-9]+", "-", raw.lower()).strip("-")[:80] or "export"
         filename = f"{document.replace('_', '-')}-{slug}.{file_format}"
         response = HttpResponse(content, content_type=content_types[file_format])
         response["Content-Disposition"] = f'attachment; filename="{filename}"'

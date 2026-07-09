@@ -34,7 +34,18 @@ def extract_text_from_upload(uploaded_file) -> str:
         except Exception:
             raise ValidationError("Could not read this PDF. Try exporting it again or use DOCX.")
     elif name.endswith(".docx"):
+        import zipfile
+
         from docx import Document
+
+        # DOCX is a zip; reject decompression bombs before python-docx parses it.
+        try:
+            with zipfile.ZipFile(io.BytesIO(data)) as zf:
+                total_uncompressed = sum(info.file_size for info in zf.infolist())
+        except zipfile.BadZipFile:
+            raise ValidationError("Could not read this DOCX file.")
+        if total_uncompressed > 50 * 1024 * 1024:
+            raise ValidationError("This DOCX file is unusually large and was rejected.")
 
         try:
             document = Document(io.BytesIO(data))

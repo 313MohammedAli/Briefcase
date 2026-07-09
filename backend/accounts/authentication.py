@@ -1,8 +1,12 @@
+import logging
+
 import jwt
 from django.conf import settings
 from rest_framework import authentication, exceptions
 
 from .models import Profile
+
+logger = logging.getLogger(__name__)
 
 _jwks_client = None
 
@@ -43,7 +47,10 @@ class ClerkJWTAuthentication(authentication.BaseAuthentication):
                 options={"verify_aud": False},
             )
         except jwt.PyJWTError as exc:
-            raise exceptions.AuthenticationFailed(f"Invalid Clerk token: {exc}")
+            # Log the specifics server-side; return a generic message so token
+            # verification internals aren't disclosed to the caller.
+            logger.warning("Clerk token verification failed: %s", exc)
+            raise exceptions.AuthenticationFailed("Invalid or expired authentication token.")
 
         clerk_user_id = payload.get("sub")
         if not clerk_user_id:
