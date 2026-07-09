@@ -2,8 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
-import Logo from "@/components/Logo";
+import { Show, UserButton } from "@clerk/nextjs";
+import Wordmark from "@/components/Wordmark";
+
+const NAV = [
+  { href: "/dashboard", label: "Dashboard" },
+  { href: "/experience", label: "Experience bank" },
+  { href: "/applications", label: "Applications" },
+];
 
 export default function AppHeader() {
   const pathname = usePathname();
@@ -11,31 +17,48 @@ export default function AppHeader() {
   if (pathname === "/") return null;
 
   return (
-    <header className="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-leather-100">
-      <div className="mx-auto w-full max-w-6xl px-6 h-16 flex items-center gap-8">
-        <Link href="/" className="flex items-center gap-2.5 font-semibold tracking-tight text-leather-900">
-          <Logo />
-          Briefcase
-        </Link>
+    <header
+      style={{
+        position: "sticky",
+        top: 0,
+        zIndex: 50,
+        background: "rgba(250,247,242,.92)",
+        backdropFilter: "blur(8px)",
+        borderBottom: "1px solid #f3ece0",
+      }}
+    >
+      <div className="mx-auto flex items-center gap-9 px-8" style={{ maxWidth: 1160, height: 68 }}>
         <Show when="signed-in">
-          <nav className="flex items-center gap-6 text-sm text-leather-600">
-            <Link href="/experience" className="hover:text-leather-900 transition-colors">
-              Experience bank
-            </Link>
-            <Link href="/applications" className="hover:text-leather-900 transition-colors">
-              Applications
-            </Link>
+          <Wordmark href="/dashboard" />
+          <nav className="hidden md:flex items-center" style={{ gap: 28, fontSize: 14, fontWeight: 500 }}>
+            {NAV.map((item) => {
+              const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  style={{ color: active ? "#553923" : "#8a5f3b" }}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
           </nav>
-        </Show>
-        <div className="ml-auto flex items-center gap-3">
-          <Show when="signed-out">
-            <SignInButton />
-            <SignUpButton />
-          </Show>
-          <Show when="signed-in">
+          <span style={{ marginLeft: "auto", display: "flex", alignItems: "center" }}>
             <UserButton />
-          </Show>
-        </div>
+          </span>
+        </Show>
+        <Show when="signed-out">
+          <Wordmark href="/" />
+          <span style={{ marginLeft: "auto", display: "flex", gap: 14, alignItems: "center", fontSize: 14, fontWeight: 500 }}>
+            <Link href="/sign-in" style={{ color: "#6f4b2f" }}>
+              Sign in
+            </Link>
+            <Link href="/sign-up" style={{ background: "#6f4b2f", color: "#fff", borderRadius: 12, padding: "9px 18px" }}>
+              Get started
+            </Link>
+          </span>
+        </Show>
       </div>
     </header>
   );
