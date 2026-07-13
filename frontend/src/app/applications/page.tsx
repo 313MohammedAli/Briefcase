@@ -83,27 +83,34 @@ export default function ApplicationsPage() {
       ) : (
         <ul className="space-y-3">
           {applications.map((app) => (
-            <li key={app.id}>
+            <li
+              key={app.id}
+              className="relative flex items-center justify-between gap-4 rounded-xl border border-leather-100 p-5 hover:border-leather-400 transition-colors"
+            >
+              {/* Overlay link covers the card for navigation; the status control
+                  sits above it as a sibling so it stays interactive. */}
               <Link
                 href={`/applications/${app.id}`}
-                className="flex items-center justify-between gap-4 rounded-xl border border-leather-100 p-5 hover:border-leather-400 transition-colors"
-              >
-                <div className="min-w-0">
-                  <h2 className="font-medium truncate">
-                    {app.job_title} <span className="text-leather-500">@ {app.company}</span>
-                  </h2>
-                  <p className="text-xs text-leather-500 mt-0.5">
-                    Created {new Date(app.created_at).toLocaleDateString()}
-                  </p>
-                </div>
-                <div className="flex items-center gap-3 shrink-0">
+                aria-label={`Open ${app.job_title} at ${app.company}`}
+                className="absolute inset-0 rounded-xl"
+              />
+              <div className="min-w-0 pointer-events-none">
+                <h2 className="font-medium truncate">
+                  {app.job_title} <span className="text-leather-500">@ {app.company}</span>
+                </h2>
+                <p className="text-xs text-leather-500 mt-0.5">
+                  Created {new Date(app.created_at).toLocaleDateString()}
+                </p>
+              </div>
+              <div className="relative flex items-center gap-3 shrink-0">
+                <span className="pointer-events-none">
                   <FitScoreBadge score={app.match_score} />
-                  <StatusSelect
-                    value={app.status}
-                    onChange={(status) => void updateStatus(app.id, status)}
-                  />
-                </div>
-              </Link>
+                </span>
+                <StatusSelect
+                  value={app.status}
+                  onChange={(status) => void updateStatus(app.id, status)}
+                />
+              </div>
             </li>
           ))}
         </ul>
