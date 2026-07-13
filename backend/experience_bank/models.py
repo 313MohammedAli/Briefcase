@@ -23,6 +23,12 @@ class ExperienceEntry(models.Model):
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
     tags = ArrayField(models.CharField(max_length=100), blank=True, default=list)
+
+    # Whether the entry is finished. Meaningful mainly for education (degree
+    # completed vs. in progress) and certifications; null for types where it
+    # doesn't apply (jobs, projects).
+    completed = models.BooleanField(null=True, blank=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

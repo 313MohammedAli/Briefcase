@@ -19,7 +19,7 @@ class ExperienceEntrySerializer(serializers.ModelSerializer):
         model = ExperienceEntry
         fields = [
             "id", "type", "title", "organization", "start_date", "end_date",
-            "tags", "bullets", "created_at", "updated_at",
+            "tags", "completed", "bullets", "created_at", "updated_at",
         ]
         read_only_fields = ["id", "created_at", "updated_at"]
 

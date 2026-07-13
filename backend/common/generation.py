@@ -65,7 +65,9 @@ def _job_context(job_application) -> str:
     )
 
 
-def generate_cover_letters(job_application, experience_text: str, candidate_name: str = "") -> dict:
+def generate_cover_letters(
+    job_application, experience_text: str, candidate_name: str = "", personal_statement: str = ""
+) -> dict:
     """Returns {"concise": [paragraphs], "detailed": [...], "enthusiastic": [...]}."""
     paragraphs_schema = {"type": "array", "items": {"type": "string"}}
     schema = {
@@ -93,10 +95,17 @@ def generate_cover_letters(job_application, experience_text: str, candidate_name
         if candidate_name
         else "Candidate name: not provided (use the [Your Name] placeholder in the sign-off)"
     )
+    statement_block = (
+        f"\n\nCandidate's personal statement (draw on this for motivation and voice "
+        f"only where it strengthens the letter; do not force it in):\n{personal_statement}"
+        if personal_statement.strip()
+        else ""
+    )
     user = (
         f"{_job_context(job_application)}\n\n"
         f"{name_line}\n\n"
         f"Candidate's relevant experience:\n{experience_text}"
+        f"{statement_block}"
     )
     letters = _structured_call(system, user, "cover_letter_variants", schema)
     return {

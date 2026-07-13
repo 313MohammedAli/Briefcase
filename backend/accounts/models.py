@@ -22,6 +22,11 @@ class Profile(models.Model):
     resume_filename = models.CharField(max_length=255, blank=True)
     resume_uploaded_at = models.DateTimeField(null=True, blank=True)
 
+    # A short first-person statement about the candidate (motivation, values,
+    # career narrative) that generation can weave into cover letters when
+    # relevant.
+    personal_statement = models.TextField(blank=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

@@ -107,7 +107,10 @@ class JobApplicationViewSet(viewsets.ModelViewSet):
         experience_text = format_bullets_for_prompt(result.bullets)
 
         job_application.generated_cover_letters = generate_cover_letters(
-            job_application, experience_text, candidate_name=request.user.name
+            job_application,
+            experience_text,
+            candidate_name=request.user.name,
+            personal_statement=request.user.personal_statement,
         )
         if not job_application.selected_variant:
             job_application.selected_variant = "concise"

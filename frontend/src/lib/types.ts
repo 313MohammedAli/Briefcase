@@ -14,6 +14,7 @@ export interface ExperienceEntry {
   start_date: string | null;
   end_date: string | null;
   tags: string[];
+  completed: boolean | null;
   bullets: ExperienceBullet[];
   created_at: string;
   updated_at: string;
@@ -21,8 +22,16 @@ export interface ExperienceEntry {
 
 export type ExperienceEntryInput = Omit<
   ExperienceEntry,
-  "id" | "created_at" | "updated_at" | "bullets"
-> & { bullets: { text: string; order: number }[] };
+  "id" | "created_at" | "updated_at" | "bullets" | "completed"
+> & { completed?: boolean | null; bullets: { text: string; order: number }[] };
+
+export interface Profile {
+  name: string;
+  email: string;
+  personal_statement: string;
+  resume_filename: string;
+  resume_uploaded_at: string | null;
+}
 
 export type CoverLetterVariant = "concise" | "detailed" | "enthusiastic";
 

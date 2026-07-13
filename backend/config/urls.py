@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
+from accounts.views import ProfileView
 from experience_bank.views import ExperienceEntryViewSet
 from job_applications.views import JobApplicationViewSet
 
@@ -13,5 +14,6 @@ router.register("job-applications", JobApplicationViewSet, basename="job-applica
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/health/", lambda request: JsonResponse({"status": "ok"})),
+    path("api/profile/", ProfileView.as_view(), name="profile"),
     path("api/", include(router.urls)),
 ]
