@@ -434,9 +434,9 @@ export default function Home() {
             Briefcase
           </span>
           <span style={{ marginLeft: "auto", display: "flex", gap: 24 }}>
-            <a href="#" style={{ color: "#d2b494" }}>Privacy</a>
-            <a href="#" style={{ color: "#d2b494" }}>Terms</a>
-            <a href="#" style={{ color: "#d2b494" }}>Contact</a>
+            <Link href="/privacy" style={{ color: "#d2b494" }}>Privacy</Link>
+            <Link href="/terms" style={{ color: "#d2b494" }}>Terms</Link>
+            <a href="mailto:support@briefcasecareer.com" style={{ color: "#d2b494" }}>Contact</a>
           </span>
           <span style={{ color: "#8a5f3b" }}>© 2026 Briefcase</span>
         </div>
