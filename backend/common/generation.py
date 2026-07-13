@@ -178,6 +178,34 @@ def tailor_resume(job_application, bullets) -> dict:
     return _structured_call(system, user, "tailored_resume", schema)
 
 
+def extract_job_posting(page_text: str) -> dict:
+    """Pulls {job_title, company, job_description} out of a fetched job page.
+
+    Returns empty strings for anything not found so the user can fill gaps
+    in the review step.
+    """
+    schema = {
+        "type": "object",
+        "properties": {
+            "job_title": {"type": "string"},
+            "company": {"type": "string"},
+            "job_description": {"type": "string"},
+        },
+        "required": ["job_title", "company", "job_description"],
+        "additionalProperties": False,
+    }
+    system = (
+        "You are given the raw text of a web page that contains a job posting. "
+        "Extract the job title, the hiring company's name, and the full job "
+        "description (responsibilities, requirements, and qualifications). "
+        "Exclude site navigation, cookie banners, unrelated links, and other "
+        "postings. If a field genuinely isn't present, return an empty string. "
+        "Do not invent details."
+    )
+    # Cap input so a huge page can't blow up token cost.
+    return _structured_call(system, page_text[:20000], "job_posting", schema)
+
+
 def extract_keywords(job_description: str) -> list[str]:
     """Pulls the concrete skills/tools/qualifications an ATS would scan for."""
     schema = {

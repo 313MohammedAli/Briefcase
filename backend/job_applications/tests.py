@@ -126,3 +126,23 @@ class SecurityHardeningTests(TestCase):
         self.assertNotIn('"', disposition.split("filename=")[1][1:-1])
         self.assertNotIn("\n", disposition)
         self.assertNotIn("/", disposition.split("filename=")[1])
+
+
+class SSRFGuardTests(TestCase):
+    def test_internal_and_bad_scheme_urls_are_blocked(self):
+        from rest_framework.exceptions import ValidationError
+
+        from common.url_fetch import _validate_url
+
+        for url in [
+            "http://localhost/x",
+            "http://127.0.0.1/x",
+            "http://169.254.169.254/latest/meta-data",
+            "http://10.0.0.1/",
+            "http://192.168.1.1/",
+            "http://[::1]/",
+            "ftp://example.com/x",
+            "file:///etc/passwd",
+        ]:
+            with self.assertRaises(ValidationError, msg=url):
+                _validate_url(url)

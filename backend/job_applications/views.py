@@ -13,6 +13,7 @@ from common.throttling import AIRateThrottle
 from common.embeddings import embed_text
 from common.generation import (
     COVER_LETTER_VARIANTS,
+    extract_job_posting,
     extract_keywords,
     generate_cover_letters,
     keyword_gap_analysis,
@@ -20,6 +21,7 @@ from common.generation import (
     tailor_resume,
 )
 from common.retrieval import format_bullets_for_prompt, retrieve_relevant_bullets
+from common.url_fetch import fetch_url_text
 from experience_bank.models import ExperienceBullet
 
 from .models import JobApplication
@@ -62,6 +64,27 @@ class JobApplicationViewSet(viewsets.ModelViewSet):
         return retrieve_relevant_bullets(
             self.request.user, job_application.job_description_embedding
         )
+
+    @action(detail=False, methods=["post"], url_path="from-url", throttle_classes=[AIRateThrottle])
+    def from_url(self, request):
+        """Fetches a job posting URL and returns extracted fields for review.
+
+        Does not create the application — the client prefills the form so the
+        user can verify title/company/description before generating.
+        """
+        if (error := _require_openai()) is not None:
+            return error
+        url = (request.data.get("url") or "").strip()
+        if not url:
+            raise ValidationError("Provide a job posting URL.")
+
+        page_text = fetch_url_text(url)
+        if len(page_text) < 100:
+            raise ValidationError(
+                "Couldn't read enough text from that page (it may require login "
+                "or block automated access). Paste the description instead."
+            )
+        return Response(extract_job_posting(page_text))
 
     @action(detail=True, methods=["post"], throttle_classes=[AIRateThrottle])
     def generate(self, request, pk=None):
