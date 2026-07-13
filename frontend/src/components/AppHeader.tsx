@@ -27,7 +27,7 @@ export default function AppHeader() {
         borderBottom: "1px solid #f3ece0",
       }}
     >
-      <div className="mx-auto flex items-center gap-9 px-8" style={{ maxWidth: 1160, height: 68 }}>
+      <div className="mx-auto w-full max-w-5xl 2xl:max-w-6xl flex items-center gap-9 px-6" style={{ height: 68 }}>
         <Show when="signed-in">
           <Wordmark href="/dashboard" />
           <nav className="hidden md:flex items-center" style={{ gap: 28, fontSize: 14, fontWeight: 500 }}>

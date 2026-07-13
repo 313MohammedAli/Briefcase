@@ -78,14 +78,14 @@ export default function ApplicationDetailPage({
 
   if (application === null && !error) {
     return (
-      <main className="mx-auto w-full max-w-3xl px-6 py-10">
+      <main className="mx-auto w-full max-w-4xl 2xl:max-w-5xl px-6 py-10">
         <p className="text-sm text-leather-500">Loading…</p>
       </main>
     );
   }
 
   return (
-    <main className="mx-auto w-full max-w-3xl px-6 py-10 space-y-5">
+    <main className="mx-auto w-full max-w-4xl 2xl:max-w-5xl px-6 py-10 space-y-5">
       <div>
         <Link href="/applications" className="text-sm text-leather-500 hover:underline">
           ← Applications

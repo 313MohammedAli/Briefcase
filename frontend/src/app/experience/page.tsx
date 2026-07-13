@@ -248,7 +248,7 @@ export default function ExperiencePage() {
   const statementDirty = statementDraft !== null && statementDraft !== statement;
 
   return (
-    <main className="mx-auto w-full max-w-3xl px-6 py-10">
+    <main className="mx-auto w-full max-w-5xl 2xl:max-w-6xl px-6 py-10">
       <div className="mb-8">
         <h1 className="text-2xl font-semibold tracking-tight">Experience Bank</h1>
         <p className="text-sm text-leather-600 mt-1">

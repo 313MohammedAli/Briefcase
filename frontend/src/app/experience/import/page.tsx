@@ -98,7 +98,7 @@ export default function ImportResumePage() {
   };
 
   return (
-    <main className="mx-auto w-full max-w-3xl px-6 py-10">
+    <main className="mx-auto w-full max-w-5xl 2xl:max-w-6xl px-6 py-10">
       <Link href="/experience" className="text-sm text-leather-500 hover:underline">
         ← Experience bank
       </Link>

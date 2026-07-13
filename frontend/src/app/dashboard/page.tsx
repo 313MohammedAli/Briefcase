@@ -136,7 +136,7 @@ export default function DashboardPage() {
   const firstName = user?.firstName || user?.fullName?.split(" ")[0] || "";
 
   return (
-    <main className="mx-auto w-full max-w-5xl px-6 py-10">
+    <main className="mx-auto w-full max-w-5xl 2xl:max-w-6xl px-6 py-10">
       <div className="mb-8">
         <h1 className="text-2xl font-semibold tracking-tight">
           {firstName ? `Welcome back, ${firstName}` : "Your dashboard"}
