@@ -85,7 +85,7 @@ export default function ApplicationDetailPage({
   }
 
   return (
-    <main className="mx-auto w-full max-w-4xl 2xl:max-w-5xl px-6 py-10 space-y-5">
+    <main className="mx-auto w-full max-w-5xl 2xl:max-w-6xl px-6 py-10 space-y-5">
       <div>
         <Link href="/applications" className="text-sm text-leather-500 hover:underline">
           ← Applications
@@ -149,31 +149,48 @@ export default function ApplicationDetailPage({
             </div>
           )}
 
-          {hasCoverLetters(application) && (
-            <>
-              <CoverLetterPanel
-                application={application}
-                onChange={setApplication}
-                onError={setError}
-              />
-              <KeywordGapPanel analysis={application.keyword_gap_analysis} />
-              <ResumePanel
-                application={application}
-                onChange={setApplication}
-                onError={setError}
-              />
-              <div className="flex justify-end">
-                <button
-                  onClick={() => void generate()}
-                  disabled={generating}
-                  className="text-xs text-leather-500 hover:underline disabled:opacity-50"
-                  title="Re-run retrieval, cover letters, fit score, and ATS analysis. Overwrites manual cover letter edits."
-                >
-                  ↻ Regenerate everything
-                </button>
-              </div>
-            </>
-          )}
+          {hasCoverLetters(application) &&
+            (() => {
+              const gap = application.keyword_gap_analysis ?? {};
+              const hasAts = (gap.matched?.length ?? 0) + (gap.missing?.length ?? 0) > 0;
+              const documents = (
+                <div className="space-y-5 min-w-0">
+                  <CoverLetterPanel
+                    application={application}
+                    onChange={setApplication}
+                    onError={setError}
+                  />
+                  <ResumePanel
+                    application={application}
+                    onChange={setApplication}
+                    onError={setError}
+                  />
+                  <div className="flex justify-end">
+                    <button
+                      onClick={() => void generate()}
+                      disabled={generating}
+                      className="text-xs text-leather-500 hover:underline disabled:opacity-50"
+                      title="Re-run retrieval, cover letters, fit score, and ATS analysis. Overwrites manual cover letter edits."
+                    >
+                      ↻ Regenerate everything
+                    </button>
+                  </div>
+                </div>
+              );
+
+              if (!hasAts) return documents;
+
+              // Wide screens: documents on the left, ATS analysis in a sticky
+              // sidebar so the extra width is used instead of left empty.
+              return (
+                <div className="grid gap-5 items-start lg:grid-cols-[minmax(0,1fr)_340px]">
+                  {documents}
+                  <aside className="lg:sticky lg:top-24">
+                    <KeywordGapPanel analysis={gap} stacked />
+                  </aside>
+                </div>
+              );
+            })()}
         </>
       )}
     </main>

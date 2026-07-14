@@ -1,7 +1,9 @@
 export default function KeywordGapPanel({
   analysis,
+  stacked = false,
 }: {
   analysis: { matched?: string[]; missing?: string[] };
+  stacked?: boolean;
 }) {
   const matched = analysis.matched ?? [];
   const missing = analysis.missing ?? [];
@@ -17,7 +19,7 @@ export default function KeywordGapPanel({
         Keywords an applicant tracking system would scan for, compared against your experience
         bank. Consider addressing missing ones you actually have.
       </p>
-      <div className="grid grid-cols-2 gap-4">
+      <div className={stacked ? "space-y-4" : "grid grid-cols-2 gap-4"}>
         <div>
           <h3 className="text-xs uppercase tracking-wide text-emerald-700 mb-2">
             Matched ({matched.length})
