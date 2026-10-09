@@ -17,44 +17,45 @@ export default function AppHeader() {
   if (pathname === "/") return null;
 
   return (
-    <header
-      style={{
-        position: "sticky",
-        top: 0,
-        zIndex: 50,
-        background: "rgba(250,247,242,.92)",
-        backdropFilter: "blur(8px)",
-        borderBottom: "1px solid #f3ece0",
-      }}
-    >
-      <div className="mx-auto w-full max-w-5xl 2xl:max-w-6xl flex items-center gap-9 px-6" style={{ height: 68 }}>
+    <header className="sticky top-0 z-50 border-b border-leather-100 bg-leather-50/92 backdrop-blur">
+      <div className="mx-auto w-full max-w-5xl 2xl:max-w-6xl flex items-center gap-9 px-6 h-[68px]">
         <Show when="signed-in">
           <Wordmark href="/dashboard" />
-          <nav className="hidden md:flex items-center" style={{ gap: 28, fontSize: 14, fontWeight: 500 }}>
+          <nav className="hidden md:flex items-stretch self-stretch gap-7 text-sm font-medium">
             {NAV.map((item) => {
               const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  style={{ color: active ? "#553923" : "#8a5f3b" }}
+                  aria-current={active ? "page" : undefined}
+                  className={`relative flex items-center transition-colors ${
+                    active ? "text-leather-900" : "text-leather-600 hover:text-leather-900"
+                  }`}
                 >
                   {item.label}
+                  {/* Amber latch under the active item: the one accent in the shell. */}
+                  <span
+                    aria-hidden
+                    className={`absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-amber transition-opacity ${
+                      active ? "opacity-100" : "opacity-0"
+                    }`}
+                  />
                 </Link>
               );
             })}
           </nav>
-          <span style={{ marginLeft: "auto", display: "flex", alignItems: "center" }}>
+          <span className="ml-auto flex items-center">
             <UserButton />
           </span>
         </Show>
         <Show when="signed-out">
           <Wordmark href="/" />
-          <span style={{ marginLeft: "auto", display: "flex", gap: 14, alignItems: "center", fontSize: 14, fontWeight: 500 }}>
-            <Link href="/sign-in" style={{ color: "#6f4b2f" }}>
+          <span className="ml-auto flex items-center gap-3 text-sm font-medium">
+            <Link href="/sign-in" className="text-leather-700 hover:text-leather-900">
               Sign in
             </Link>
-            <Link href="/sign-up" style={{ background: "#6f4b2f", color: "#fff", borderRadius: 12, padding: "9px 18px" }}>
+            <Link href="/sign-up" className="btn btn-primary">
               Get started
             </Link>
           </span>

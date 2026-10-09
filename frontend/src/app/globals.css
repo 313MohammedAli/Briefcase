@@ -11,17 +11,185 @@
   --color-leather-700: #6f4b2f;
   --color-leather-800: #553923;
   --color-leather-900: #3d2818;
+
+  /* Brand accent: the briefcase latches and sparks. One accent, used sparingly. */
+  --color-amber: #f59e0b;
+
+  /* Semantic colours derived in oklch so they share warmth with the leather
+     scale instead of reading as stock Tailwind blue/red/green. Each pair is a
+     tinted surface + ink for chips, and a `-strong` for bars/rings. */
+  --color-good-bg: oklch(95% 0.035 155);
+  --color-good-fg: oklch(42% 0.11 155);
+  --color-good-strong: oklch(62% 0.14 155);
+  --color-warn-bg: oklch(95% 0.045 80);
+  --color-warn-fg: oklch(48% 0.12 70);
+  --color-warn-strong: oklch(72% 0.16 75);
+  --color-bad-bg: oklch(95% 0.03 25);
+  --color-bad-fg: oklch(45% 0.14 25);
+  --color-bad-strong: oklch(60% 0.18 25);
+  --color-info-bg: oklch(95% 0.025 250);
+  --color-info-fg: oklch(45% 0.1 250);
+  --color-info-strong: oklch(60% 0.12 250);
 }
 
 @theme inline {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-newsreader);
 }
 
 body {
-  background: #ffffff;
+  /* Cream desk; cards are white paper laid on top. Matches the header and landing. */
+  background: var(--color-leather-50);
   color: var(--color-leather-900);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  text-wrap: pretty;
+}
+
+/* ---- Shared UI primitives ------------------------------------------------
+   Three radii only: 12px cards, 8px controls, pill chips. Buttons come in two
+   sizes. Keeping these as classes stops each page inventing its own. */
+@layer components {
+  .card {
+    background: #fff;
+    border: 1px solid var(--color-leather-100);
+    border-radius: 12px;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 1;
+    padding: 10px 16px;
+    white-space: nowrap;
+    transition: background-color 150ms ease-out, border-color 150ms ease-out, color 150ms ease-out;
+    cursor: pointer;
+  }
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+  .btn-sm {
+    font-size: 13px;
+    padding: 7px 12px;
+  }
+  .btn-primary {
+    background: var(--color-leather-700);
+    color: #fff;
+  }
+  .btn-primary:not(:disabled):hover {
+    background: var(--color-leather-800);
+  }
+  .btn-secondary {
+    background: #fff;
+    color: var(--color-leather-800);
+    border: 1px solid var(--color-leather-200);
+  }
+  .btn-secondary:not(:disabled):hover {
+    border-color: var(--color-leather-400);
+  }
+  .btn-ghost {
+    background: transparent;
+    color: var(--color-leather-600);
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+  .btn-ghost:not(:disabled):hover {
+    color: var(--color-leather-900);
+    background: var(--color-leather-100);
+  }
+
+  .input {
+    width: 100%;
+    background: #fff;
+    border: 1px solid var(--color-leather-200);
+    border-radius: 8px;
+    padding: 9px 12px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--color-leather-900);
+    transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
+  }
+  .input::placeholder {
+    color: var(--color-leather-400);
+  }
+  .input:hover {
+    border-color: var(--color-leather-300);
+  }
+  .input:focus {
+    outline: none;
+    border-color: var(--color-amber);
+    box-shadow: 0 0 0 3px color-mix(in oklch, var(--color-amber) 25%, transparent);
+  }
+
+  /* Document surface: the cover letter and resume are read, not filled in.
+     Serif, comfortable measure, editable in place without looking like a form. */
+  .sheet {
+    font-family: var(--font-serif), Georgia, serif;
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--color-leather-900);
+  }
+  .sheet-field {
+    width: 100%;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    padding: 6px 10px;
+    margin: 0 -10px;
+    width: calc(100% + 20px);
+    resize: none;
+    font: inherit;
+    color: inherit;
+    transition: border-color 150ms ease-out, background-color 150ms ease-out;
+  }
+  .sheet-field:hover {
+    border-color: var(--color-leather-100);
+  }
+  .sheet-field:focus {
+    outline: none;
+    background: var(--color-leather-50);
+    border-color: var(--color-leather-200);
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 3px 10px;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.4;
+    white-space: nowrap;
+  }
+
+  .eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-leather-500);
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-amber);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 @keyframes sparkPulse {

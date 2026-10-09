@@ -1,7 +1,14 @@
 export function fitScoreColor(score: number): string {
-  if (score >= 70) return "text-emerald-700 bg-emerald-50";
-  if (score >= 40) return "text-amber-700 bg-amber-50";
-  return "text-red-700 bg-red-50";
+  if (score >= 70) return "text-good-fg bg-good-bg";
+  if (score >= 40) return "text-warn-fg bg-warn-bg";
+  return "text-bad-fg bg-bad-bg";
+}
+
+/** Ink-only variant for large numbers that sit on their own surface. */
+export function fitScoreInk(score: number): string {
+  if (score >= 70) return "text-good-fg";
+  if (score >= 40) return "text-warn-fg";
+  return "text-bad-fg";
 }
 
 export default function FitScoreBadge({
@@ -12,16 +19,12 @@ export default function FitScoreBadge({
   size?: "sm" | "lg";
 }) {
   if (score === null) {
-    return (
-      <span className="rounded-full bg-leather-100 px-2.5 py-0.5 text-xs text-leather-500">
-        no score
-      </span>
-    );
+    return <span className="chip bg-leather-100 text-leather-500 font-normal">No score</span>;
   }
-  const sizeClass = size === "lg" ? "px-4 py-1.5 text-base" : "px-2.5 py-0.5 text-xs";
+  const sizeClass = size === "lg" ? "text-sm px-3.5 py-1.5" : "";
   return (
     <span
-      className={`rounded-full font-medium ${sizeClass} ${fitScoreColor(score)}`}
+      className={`chip tabular-nums ${sizeClass} ${fitScoreColor(score)}`}
       title="Fit score: aggregate similarity between the job description and your experience bank"
     >
       {Math.round(score)}% fit
