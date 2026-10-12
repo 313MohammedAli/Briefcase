@@ -4,9 +4,6 @@ import { useState } from "react";
 import { useApi } from "@/lib/api";
 import type { JobApplication, TailoredResume } from "@/lib/types";
 
-const inputClass =
-  "w-full field-sizing-content rounded-md border border-transparent hover:border-leather-100 focus:border-leather-300 bg-transparent px-3 py-2 text-sm leading-relaxed resize-none focus:outline-none";
-
 export default function ResumePanel({
   application,
   onChange,
@@ -81,66 +78,65 @@ export default function ResumePanel({
   };
 
   return (
-    <section className="rounded-xl border border-leather-100 p-5">
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-        <h2 className="font-medium">Tailored resume</h2>
+    <section className="card">
+      <header className="flex flex-wrap items-center justify-between gap-3 px-6 py-4 border-b border-leather-100">
+        <h2 className="font-medium text-leather-900">Tailored resume</h2>
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => void tailor()}
-            disabled={tailoring}
-            className="rounded-md bg-leather-700 text-white px-3 py-1.5 text-xs font-medium disabled:opacity-50"
-          >
+          <button onClick={() => void tailor()} disabled={tailoring} className="btn btn-primary btn-sm">
             {tailoring ? "Tailoring…" : hasResume ? "Re-tailor" : "Tailor resume"}
           </button>
           <button
             onClick={() => void exportFile("pdf")}
             disabled={exporting || !hasResume}
-            className="rounded-md border border-leather-200 px-3 py-1.5 text-xs disabled:opacity-50"
+            className="btn btn-secondary btn-sm"
           >
             Export PDF
           </button>
           <button
             onClick={() => void exportFile("docx")}
             disabled={exporting || !hasResume}
-            className="rounded-md border border-leather-200 px-3 py-1.5 text-xs disabled:opacity-50"
+            className="btn btn-secondary btn-sm"
           >
             Export DOCX
           </button>
         </div>
-      </div>
+      </header>
 
       {!hasResume ? (
-        <p className="text-sm text-leather-500">
+        <p className="px-6 py-8 text-sm text-leather-500">
           {tailoring
             ? "Reordering and reweighting your experience for this job…"
             : "No tailored resume yet. Briefcase will reorder and reweight your experience bullets for this job description."}
         </p>
       ) : (
-        <div className="space-y-4">
+        <div className="sheet px-6 sm:px-10 py-8 max-w-[68ch] space-y-7">
           <div>
-            <h3 className="text-xs uppercase tracking-wide text-leather-500 mb-1 px-3">Summary</h3>
+            <h3 className="eyebrow font-sans mb-2">Summary</h3>
             <textarea
               value={resume.summary ?? ""}
               rows={3}
               onChange={(e) => setDraft({ ...resume, summary: e.target.value })}
-              className={inputClass}
+              aria-label="Summary"
+              className="sheet-field field-sizing-content"
             />
           </div>
           {(resume.entries ?? []).map((entry, i) => (
-            <div key={i} className="border-t border-leather-100 pt-3">
-              <div className="px-3">
-                <p className="text-sm font-medium">
+            <div key={i}>
+              <div className="flex flex-wrap items-baseline justify-between gap-x-4">
+                <p className="font-semibold text-leather-900">
                   {entry.title}
                   {entry.organization && (
-                    <span className="text-leather-500"> — {entry.organization}</span>
+                    <span className="font-normal text-leather-600"> · {entry.organization}</span>
                   )}
                 </p>
-                {entry.dates && <p className="text-xs text-leather-500">{entry.dates}</p>}
+                {entry.dates && (
+                  <p className="font-sans text-xs text-leather-500 tabular-nums">{entry.dates}</p>
+                )}
               </div>
-              <div className="mt-1 space-y-1">
+              <ul className="mt-2 space-y-0.5">
                 {entry.bullets.map((bullet, j) => (
-                  <div key={j} className="flex items-start gap-1">
-                    <span className="text-leather-400 pt-2 pl-3 text-sm">•</span>
+                  <li key={j} className="flex items-start gap-2">
+                    <span aria-hidden className="text-leather-400 pt-1.5 select-none">•</span>
                     <textarea
                       value={bullet}
                       rows={Math.max(1, Math.ceil(bullet.length / 90))}
@@ -149,31 +145,26 @@ export default function ResumePanel({
                         bullets[j] = e.target.value;
                         updateEntry(i, { bullets });
                       }}
-                      className={inputClass}
+                      aria-label={`${entry.title} bullet ${j + 1}`}
+                      className="sheet-field field-sizing-content"
                     />
-                  </div>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
           ))}
         </div>
       )}
 
       {dirty && (
-        <div className="mt-4 flex gap-2">
-          <button
-            onClick={() => void save()}
-            disabled={saving}
-            className="rounded-lg bg-leather-700 text-white px-4 py-2 text-sm font-medium disabled:opacity-50"
-          >
+        <div className="flex items-center gap-2 px-6 py-4 border-t border-leather-100 bg-leather-50 rounded-b-[12px]">
+          <button onClick={() => void save()} disabled={saving} className="btn btn-primary btn-sm">
             {saving ? "Saving…" : "Save edits"}
           </button>
-          <button
-            onClick={() => setDraft(null)}
-            className="rounded-lg border border-leather-200 px-4 py-2 text-sm"
-          >
+          <button onClick={() => setDraft(null)} className="btn btn-ghost btn-sm">
             Discard
           </button>
+          <span className="ml-auto text-xs text-leather-500">Unsaved changes</span>
         </div>
       )}
     </section>

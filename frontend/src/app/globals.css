@@ -30,6 +30,10 @@
   --color-info-bg: oklch(95% 0.025 250);
   --color-info-fg: oklch(45% 0.1 250);
   --color-info-strong: oklch(60% 0.12 250);
+
+  /* Built-in easings are too weak to read as intentional. One strong ease-out
+     for anything entering or responding; ease for colour changes. */
+  --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 @theme inline {
@@ -67,8 +71,16 @@ body {
     line-height: 1;
     padding: 10px 16px;
     white-space: nowrap;
-    transition: background-color 150ms ease-out, border-color 150ms ease-out, color 150ms ease-out;
+    transition:
+      background-color 150ms ease,
+      border-color 150ms ease,
+      color 150ms ease,
+      transform 160ms var(--ease-out-strong);
     cursor: pointer;
+  }
+  /* Press feedback: the interface heard you. Subtle, and only while pressed. */
+  .btn:not(:disabled):active {
+    transform: scale(0.97);
   }
   .btn:disabled {
     opacity: 0.5;
@@ -82,16 +94,10 @@ body {
     background: var(--color-leather-700);
     color: #fff;
   }
-  .btn-primary:not(:disabled):hover {
-    background: var(--color-leather-800);
-  }
   .btn-secondary {
     background: #fff;
     color: var(--color-leather-800);
     border: 1px solid var(--color-leather-200);
-  }
-  .btn-secondary:not(:disabled):hover {
-    border-color: var(--color-leather-400);
   }
   .btn-ghost {
     background: transparent;
@@ -99,9 +105,76 @@ body {
     padding-left: 8px;
     padding-right: 8px;
   }
-  .btn-ghost:not(:disabled):hover {
-    color: var(--color-leather-900);
+  .btn-danger-ghost {
+    background: transparent;
+    color: var(--color-bad-fg);
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+  /* Hover states only where a hover exists; touch devices fire them on tap. */
+  @media (hover: hover) and (pointer: fine) {
+    .btn-primary:not(:disabled):hover {
+      background: var(--color-leather-800);
+    }
+    .btn-secondary:not(:disabled):hover {
+      border-color: var(--color-leather-400);
+    }
+    .btn-ghost:not(:disabled):hover {
+      color: var(--color-leather-900);
+      background: var(--color-leather-100);
+    }
+    .btn-danger-ghost:not(:disabled):hover {
+      background: var(--color-bad-bg);
+    }
+    .row-link:hover {
+      background: var(--color-leather-50);
+    }
+    .sheet-field:hover {
+      border-color: var(--color-leather-100);
+    }
+    .input:hover {
+      border-color: var(--color-leather-300);
+    }
+  }
+
+  /* A clickable list row. Colour only; no movement on something seen all day. */
+  .row-link {
+    transition: background-color 120ms ease;
+  }
+
+  /* Segmented control (cover letter variants). */
+  .seg {
+    display: inline-flex;
+    gap: 2px;
+    padding: 3px;
+    border-radius: 8px;
     background: var(--color-leather-100);
+  }
+  .seg-item {
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-leather-600);
+    transition: color 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
+    cursor: pointer;
+  }
+  .seg-item[aria-pressed="true"] {
+    background: #fff;
+    color: var(--color-leather-900);
+    box-shadow: 0 1px 2px rgba(61, 40, 24, 0.12);
+  }
+
+  /* Enter animation for content that replaces a loading state. Opacity only
+     under reduced motion; the small rise is removed, not the fade. */
+  .enter {
+    animation: enter 220ms var(--ease-out-strong) both;
+  }
+  @keyframes enter {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
   }
 
   .input {
@@ -118,9 +191,6 @@ body {
   .input::placeholder {
     color: var(--color-leather-400);
   }
-  .input:hover {
-    border-color: var(--color-leather-300);
-  }
   .input:focus {
     outline: none;
     border-color: var(--color-amber);
@@ -136,7 +206,6 @@ body {
     color: var(--color-leather-900);
   }
   .sheet-field {
-    width: 100%;
     background: transparent;
     border: 1px solid transparent;
     border-radius: 8px;
@@ -146,10 +215,7 @@ body {
     resize: none;
     font: inherit;
     color: inherit;
-    transition: border-color 150ms ease-out, background-color 150ms ease-out;
-  }
-  .sheet-field:hover {
-    border-color: var(--color-leather-100);
+    transition: border-color 150ms ease, background-color 150ms ease;
   }
   .sheet-field:focus {
     outline: none;
@@ -182,13 +248,19 @@ body {
   outline-offset: 2px;
 }
 
+/* Reduced motion: keep fades and colour changes, drop movement. */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+  .btn:not(:disabled):active {
+    transform: none;
+  }
+  @keyframes enter {
+    from {
+      opacity: 0;
+    }
+  }
+  [style*="sparkPulse"],
+  [style*="starFloat"] {
+    animation: none !important;
   }
 }
 

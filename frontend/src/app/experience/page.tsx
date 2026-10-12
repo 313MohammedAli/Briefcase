@@ -16,8 +16,7 @@ type TypeMeta = {
   orgLabel: string;
   orgPlaceholder: string;
   titlePlaceholder: string;
-  accent: string; // text + bg for the section chip
-  ring: string; // left border accent on cards
+  accent: string; // chip colours for the type label
   singleDate: boolean; // certifications: one "issued" date
   hasCompleted: boolean; // education: completed checkbox
 };
@@ -30,7 +29,6 @@ const TYPE_META: Record<EntryType, TypeMeta> = {
     orgPlaceholder: "Acme Corp",
     titlePlaceholder: "Senior Backend Engineer",
     accent: "bg-leather-100 text-leather-800",
-    ring: "border-l-leather-400",
     singleDate: false,
     hasCompleted: false,
   },
@@ -40,8 +38,7 @@ const TYPE_META: Record<EntryType, TypeMeta> = {
     orgLabel: "School",
     orgPlaceholder: "State University",
     titlePlaceholder: "B.S. Computer Science",
-    accent: "bg-blue-50 text-blue-700",
-    ring: "border-l-blue-400",
+    accent: "bg-info-bg text-info-fg",
     singleDate: false,
     hasCompleted: true,
   },
@@ -51,8 +48,7 @@ const TYPE_META: Record<EntryType, TypeMeta> = {
     orgLabel: "Role or context",
     orgPlaceholder: "Personal project",
     titlePlaceholder: "Briefcase — AI job app tool",
-    accent: "bg-amber-50 text-amber-700",
-    ring: "border-l-amber-400",
+    accent: "bg-warn-bg text-warn-fg",
     singleDate: false,
     hasCompleted: false,
   },
@@ -62,17 +58,13 @@ const TYPE_META: Record<EntryType, TypeMeta> = {
     orgLabel: "Issuer",
     orgPlaceholder: "Amazon Web Services",
     titlePlaceholder: "AWS Solutions Architect",
-    accent: "bg-emerald-50 text-emerald-700",
-    ring: "border-l-emerald-400",
+    accent: "bg-good-bg text-good-fg",
     singleDate: true,
     hasCompleted: false,
   },
 };
 
 const SECTION_ORDER: EntryType[] = ["job", "education", "project", "certification"];
-
-const inputClass =
-  "w-full rounded-md border border-leather-200 bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-leather-400";
 
 function formatDate(iso: string | null): string {
   if (!iso) return "";
@@ -249,37 +241,40 @@ export default function ExperiencePage() {
 
   return (
     <main className="mx-auto w-full max-w-5xl 2xl:max-w-6xl px-6 py-10">
-      <div className="mb-8">
-        <h1 className="text-2xl font-semibold tracking-tight">Experience Bank</h1>
-        <p className="text-sm text-leather-600 mt-1">
-          Everything you&apos;ve done, organized by type. It powers every cover letter, resume, and
-          fit score.{" "}
-          <Link href="/experience/import" className="text-leather-700 underline">
-            Import from a resume
-          </Link>
-          .
-        </p>
+      <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
+        <div>
+          <h1 className="font-serif text-[34px] leading-tight tracking-tight text-leather-900">
+            Experience bank
+          </h1>
+          <p className="text-[15px] text-leather-600 mt-1.5 max-w-prose">
+            Everything you&apos;ve done, organized by type. It powers every cover letter, resume,
+            and fit score.
+          </p>
+        </div>
+        <Link href="/experience/import" className="btn btn-secondary">
+          Import from a resume
+        </Link>
       </div>
 
       {error && (
-        <p className="mb-4 rounded-md bg-red-50 text-red-700 px-3 py-2 text-sm">{error}</p>
+        <p className="mb-4 rounded-lg bg-bad-bg text-bad-fg px-3 py-2 text-sm">{error}</p>
       )}
 
       {/* Personal statement */}
-      <section className="mb-8 rounded-xl border border-leather-100 p-5">
-        <div className="flex items-center justify-between mb-2">
-          <h2 className="font-medium">Personal statement</h2>
+      <section className="card p-6 mb-10">
+        <div className="flex items-center justify-between gap-3 mb-1">
+          <h2 className="font-medium text-leather-900">Personal statement</h2>
           {statementDirty && (
             <button
               onClick={() => void saveStatement()}
               disabled={savingStatement}
-              className="rounded-lg bg-leather-700 text-white px-3 py-1.5 text-xs font-medium disabled:opacity-50"
+              className="btn btn-primary btn-sm"
             >
               {savingStatement ? "Saving…" : "Save"}
             </button>
           )}
         </div>
-        <p className="text-xs text-leather-500 mb-3">
+        <p className="text-sm text-leather-600 mb-4 max-w-prose">
           A few sentences about who you are, what drives you, and what you&apos;re looking for.
           Briefcase weaves this into cover letters where it strengthens them.
         </p>
@@ -287,28 +282,26 @@ export default function ExperiencePage() {
           value={statementValue}
           onChange={(e) => setStatementDraft(e.target.value)}
           rows={4}
-          className={inputClass}
+          className="input leading-relaxed"
           placeholder="I'm a backend engineer who cares about reliable systems and mentoring…"
         />
       </section>
 
       {/* Add / edit form */}
       {editing && (
-        <div className="mb-8 rounded-xl border border-leather-200 p-5 space-y-4">
-          <div className="flex items-center gap-2">
-            <h2 className="font-medium">
+        <div className="card p-6 mb-10 space-y-5 border-leather-300 enter">
+          <div className="flex items-center gap-2.5">
+            <h2 className="font-serif text-xl text-leather-900">
               {editing === "new" ? `New ${meta.label.toLowerCase()}` : `Edit ${meta.label.toLowerCase()}`}
             </h2>
-            <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${meta.accent}`}>
-              {meta.label}
-            </span>
+            <span className={`chip ${meta.accent}`}>{meta.label}</span>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <label className="text-sm space-y-1">
-              <span className="text-leather-600">Type</span>
+          <div className="grid sm:grid-cols-2 gap-4">
+            <label className="text-sm space-y-1.5 block">
+              <span className="text-leather-700">Type</span>
               <select
-                className={inputClass}
+                className="input"
                 value={form.type}
                 onChange={(e) => setForm({ ...form, type: e.target.value as EntryType })}
               >
@@ -319,50 +312,50 @@ export default function ExperiencePage() {
                 ))}
               </select>
             </label>
-            <label className="text-sm space-y-1">
-              <span className="text-leather-600">Title *</span>
+            <label className="text-sm space-y-1.5 block">
+              <span className="text-leather-700">Title</span>
               <input
-                className={inputClass}
+                className="input"
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
                 placeholder={meta.titlePlaceholder}
               />
             </label>
-            <label className="text-sm space-y-1">
-              <span className="text-leather-600">{meta.orgLabel}</span>
+            <label className="text-sm space-y-1.5 block">
+              <span className="text-leather-700">{meta.orgLabel}</span>
               <input
-                className={inputClass}
+                className="input"
                 value={form.organization}
                 onChange={(e) => setForm({ ...form, organization: e.target.value })}
                 placeholder={meta.orgPlaceholder}
               />
             </label>
-            <label className="text-sm space-y-1">
-              <span className="text-leather-600">Tags (comma-separated)</span>
+            <label className="text-sm space-y-1.5 block">
+              <span className="text-leather-700">Tags (comma-separated)</span>
               <input
-                className={inputClass}
+                className="input"
                 value={form.tags}
                 onChange={(e) => setForm({ ...form, tags: e.target.value })}
                 placeholder="Python, Django, AWS"
               />
             </label>
-            <label className="text-sm space-y-1">
-              <span className="text-leather-600">{meta.singleDate ? "Issued" : "Start date"}</span>
+            <label className="text-sm space-y-1.5 block">
+              <span className="text-leather-700">{meta.singleDate ? "Issued" : "Start date"}</span>
               <input
                 type="date"
-                className={inputClass}
+                className="input"
                 value={form.start_date}
                 onChange={(e) => setForm({ ...form, start_date: e.target.value })}
               />
             </label>
             {!meta.singleDate && (
-              <label className="text-sm space-y-1">
-                <span className="text-leather-600">
+              <label className="text-sm space-y-1.5 block">
+                <span className="text-leather-700">
                   End date {meta.hasCompleted ? "(or expected)" : "(blank = present)"}
                 </span>
                 <input
                   type="date"
-                  className={inputClass}
+                  className="input"
                   value={form.end_date}
                   onChange={(e) => setForm({ ...form, end_date: e.target.value })}
                 />
@@ -374,6 +367,7 @@ export default function ExperiencePage() {
             <label className="flex items-center gap-2 text-sm text-leather-700">
               <input
                 type="checkbox"
+                className="accent-leather-700 w-4 h-4"
                 checked={form.completed}
                 onChange={(e) => setForm({ ...form, completed: e.target.checked })}
               />
@@ -382,15 +376,15 @@ export default function ExperiencePage() {
           )}
 
           <div className="space-y-2">
-            <span className="text-sm text-leather-600">
+            <span className="block text-sm text-leather-700">
               {form.type === "certification"
-                ? "Details (optional) — what it covers, credential ID"
-                : "Bullets — one accomplishment or responsibility each"}
+                ? "Details (optional): what it covers, credential ID"
+                : "Bullets: one accomplishment or responsibility each"}
             </span>
             {form.bullets.map((bullet, i) => (
               <div key={i} className="flex gap-2">
                 <textarea
-                  className={`${inputClass} min-h-[2.5rem]`}
+                  className="input min-h-[2.5rem] field-sizing-content"
                   rows={2}
                   value={bullet}
                   onChange={(e) =>
@@ -408,7 +402,7 @@ export default function ExperiencePage() {
                       bullets: f.bullets.length > 1 ? f.bullets.filter((_, j) => j !== i) : [""],
                     }))
                   }
-                  className="text-leather-400 hover:text-red-600 text-sm px-1 shrink-0"
+                  className="btn btn-ghost btn-sm shrink-0 self-start"
                   aria-label="Remove bullet"
                 >
                   ✕
@@ -417,24 +411,17 @@ export default function ExperiencePage() {
             ))}
             <button
               onClick={() => setForm((f) => ({ ...f, bullets: [...f.bullets, ""] }))}
-              className="text-sm text-leather-600 hover:text-leather-900"
+              className="btn btn-ghost btn-sm -ml-2"
             >
               + Add bullet
             </button>
           </div>
 
-          <div className="flex gap-3">
-            <button
-              onClick={save}
-              disabled={saving}
-              className="rounded-lg bg-leather-700 text-white px-4 py-2 text-sm font-medium disabled:opacity-50"
-            >
+          <div className="flex gap-2 pt-1">
+            <button onClick={save} disabled={saving} className="btn btn-primary">
               {saving ? "Saving…" : "Save entry"}
             </button>
-            <button
-              onClick={() => setEditing(null)}
-              className="rounded-lg border border-leather-200 px-4 py-2 text-sm"
-            >
+            <button onClick={() => setEditing(null)} className="btn btn-secondary">
               Cancel
             </button>
           </div>
@@ -445,79 +432,63 @@ export default function ExperiencePage() {
       {entries === null ? (
         <p className="text-sm text-leather-500">Loading…</p>
       ) : (
-        <div className="space-y-8">
+        <div className="space-y-10 enter">
           {SECTION_ORDER.map((type) => {
             const meta = TYPE_META[type];
             const items = entries.filter((e) => e.type === type);
             return (
               <section key={type}>
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${meta.accent}`}>
-                      {meta.plural}
+                <div className="flex items-baseline justify-between mb-4">
+                  <h2 className="font-serif text-[22px] text-leather-900">
+                    {meta.plural}
+                    <span className="ml-2.5 font-sans text-sm font-medium text-leather-500 tabular-nums">
+                      {items.length}
                     </span>
-                    <span className="text-xs text-leather-400">{items.length}</span>
-                  </div>
-                  <button
-                    onClick={() => openNew(type)}
-                    className="text-sm text-leather-600 hover:text-leather-900"
-                  >
-                    + Add
+                  </h2>
+                  <button onClick={() => openNew(type)} className="btn btn-ghost btn-sm">
+                    + Add {meta.label.toLowerCase()}
                   </button>
                 </div>
 
                 {items.length === 0 ? (
-                  <div className="rounded-xl border border-dashed border-leather-200 p-5 text-center text-sm text-leather-400">
+                  <div className="rounded-xl border border-dashed border-leather-200 p-6 text-center text-sm text-leather-500">
                     No {meta.plural.toLowerCase()} yet.
                   </div>
                 ) : (
-                  <ul className="space-y-3">
+                  <ul className="card divide-y divide-leather-100">
                     {items.map((entry) => (
-                      <li
-                        key={entry.id}
-                        className={`rounded-xl border border-leather-100 border-l-4 ${meta.ring} p-5`}
-                      >
+                      <li key={entry.id} className="p-6">
                         <div className="flex items-start justify-between gap-4">
                           <div className="min-w-0">
-                            <h3 className="font-medium">
+                            <h3 className="text-[15px] font-medium text-leather-900">
                               {entry.title}
                               {entry.organization && (
-                                <span className="text-leather-500"> · {entry.organization}</span>
+                                <span className="font-normal text-leather-600"> · {entry.organization}</span>
                               )}
                             </h3>
-                            <div className="flex items-center gap-2 mt-0.5">
+                            <div className="flex flex-wrap items-center gap-2 mt-1">
                               {dateRange(entry) && (
-                                <span className="text-xs text-leather-500">{dateRange(entry)}</span>
+                                <span className="text-sm text-leather-500 tabular-nums">{dateRange(entry)}</span>
                               )}
                               {meta.hasCompleted && entry.completed === false && (
-                                <span className="rounded-full bg-amber-50 text-amber-700 px-2 py-0.5 text-[11px] font-medium">
-                                  In progress
-                                </span>
+                                <span className="chip bg-warn-bg text-warn-fg">In progress</span>
                               )}
                               {meta.hasCompleted && entry.completed && (
-                                <span className="rounded-full bg-emerald-50 text-emerald-700 px-2 py-0.5 text-[11px] font-medium">
-                                  Completed
-                                </span>
+                                <span className="chip bg-good-bg text-good-fg">Completed</span>
                               )}
                             </div>
                           </div>
-                          <div className="flex gap-3 text-sm shrink-0">
-                            <button
-                              onClick={() => openEdit(entry)}
-                              className="text-leather-600 hover:underline"
-                            >
+                          <div className="flex gap-1 shrink-0 -mr-2">
+                            <button onClick={() => openEdit(entry)} className="btn btn-ghost btn-sm">
                               Edit
                             </button>
-                            <button
-                              onClick={() => remove(entry.id)}
-                              className="text-red-600 hover:underline"
-                            >
+                            <button onClick={() => remove(entry.id)} className="btn btn-danger-ghost btn-sm">
                               Delete
                             </button>
                           </div>
                         </div>
                         {entry.bullets.length > 0 && (
-                          <ul className="mt-3 list-disc pl-5 space-y-1 text-sm text-leather-800">
+                          <ul className="mt-3 list-disc pl-5 space-y-1 text-[15px] leading-relaxed text-leather-800 marker:text-leather-400">
                             {entry.bullets.map((b) => (
                               <li key={b.id ?? b.text}>{b.text}</li>
                             ))}
@@ -526,10 +497,7 @@ export default function ExperiencePage() {
                         {entry.tags.length > 0 && (
                           <div className="mt-3 flex flex-wrap gap-1.5">
                             {entry.tags.map((tag) => (
-                              <span
-                                key={tag}
-                                className="rounded-full bg-leather-100 px-2.5 py-0.5 text-xs text-leather-700"
-                              >
+                              <span key={tag} className="chip bg-leather-100 text-leather-700 font-normal">
                                 {tag}
                               </span>
                             ))}

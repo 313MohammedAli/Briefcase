@@ -13,8 +13,7 @@ const ENTRY_TYPES: { value: EntryType; label: string }[] = [
   { value: "education", label: "Education" },
 ];
 
-const inputClass =
-  "w-full rounded-md border border-leather-200 bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-leather-400";
+const inputClass = "input";
 
 interface ExtractedEntry {
   type: EntryType;
@@ -99,21 +98,23 @@ export default function ImportResumePage() {
 
   return (
     <main className="mx-auto w-full max-w-5xl 2xl:max-w-6xl px-6 py-10">
-      <Link href="/experience" className="text-sm text-leather-500 hover:underline">
+      <Link href="/experience" className="text-sm text-leather-500 hover:text-leather-800">
         ← Experience bank
       </Link>
-      <h1 className="text-2xl font-semibold tracking-tight mt-3 mb-1">Import your resume</h1>
-      <p className="text-sm text-leather-600 mb-6">
+      <h1 className="font-serif text-[34px] leading-tight tracking-tight text-leather-900 mt-3">
+        Import your resume
+      </h1>
+      <p className="text-[15px] text-leather-600 mt-1.5 mb-8 max-w-prose">
         Upload a PDF, DOCX, or TXT resume. Briefcase extracts your experience so you can review,
-        edit, and add it to your bank — nothing is saved until you confirm.
+        edit, and add it to your bank. Nothing is saved until you confirm.
       </p>
 
       {error && (
-        <p className="mb-4 rounded-md bg-red-50 text-red-700 px-3 py-2 text-sm">{error}</p>
+        <p className="mb-4 rounded-lg bg-bad-bg text-bad-fg px-3 py-2 text-sm">{error}</p>
       )}
 
       {drafts === null && (
-        <div className="rounded-3xl border-2 border-dashed border-leather-200 p-12 text-center">
+        <div className="rounded-xl border-2 border-dashed border-leather-200 bg-white/60 p-14 text-center">
           <input
             ref={fileInput}
             type="file"
@@ -126,23 +127,24 @@ export default function ImportResumePage() {
           />
           {uploading ? (
             <div>
-              <p className="text-sm font-medium animate-pulse">Reading {fileName}…</p>
-              <p className="text-xs text-leather-500 mt-1">
+              <p className="font-serif text-xl text-leather-900 animate-pulse">Reading {fileName}…</p>
+              <p className="text-sm text-leather-600 mt-1.5">
                 Extracting your experience. This takes a few seconds.
               </p>
             </div>
           ) : (
             <div>
-              <p className="text-sm text-leather-600 mb-4">
-                Drag a file here or choose one from your computer
+              <p className="font-serif text-xl text-leather-900 mb-1.5">Unpack an existing resume</p>
+              <p className="text-sm text-leather-600 mb-5">
+                Choose a file from your computer
               </p>
               <button
                 onClick={() => fileInput.current?.click()}
-                className="rounded-xl bg-leather-700 text-white px-5 py-2.5 text-sm font-medium hover:bg-leather-800 transition-colors"
+                className="btn btn-primary"
               >
                 Choose resume file
               </button>
-              <p className="text-xs text-leather-400 mt-3">PDF, DOCX, or TXT — 5 MB max</p>
+              <p className="text-xs text-leather-500 mt-3">PDF, DOCX, or TXT, up to 5 MB</p>
             </div>
           )}
         </div>
@@ -151,7 +153,7 @@ export default function ImportResumePage() {
       {drafts !== null && (
         <>
           <div className="flex items-center justify-between mb-4">
-            <p className="text-sm text-leather-600">
+            <p className="text-[15px] text-leather-700">
               Extracted {drafts.length} {drafts.length === 1 ? "entry" : "entries"} from{" "}
               <span className="font-medium">{fileName}</span>. Uncheck anything you don&apos;t
               want, edit freely, then confirm.
@@ -161,7 +163,7 @@ export default function ImportResumePage() {
                 setDrafts(null);
                 setFileName(null);
               }}
-              className="text-xs text-leather-500 hover:underline shrink-0 ml-4"
+              className="btn btn-ghost btn-sm shrink-0 ml-4"
             >
               Start over
             </button>
@@ -171,9 +173,7 @@ export default function ImportResumePage() {
             {drafts.map((draft, i) => (
               <li
                 key={i}
-                className={`rounded-xl border p-5 transition-opacity ${
-                  draft.include ? "border-leather-200" : "border-leather-100 opacity-50"
-                }`}
+                className={`card p-6 transition-opacity duration-150 ${draft.include ? "" : "opacity-50"}`}
               >
                 <div className="flex items-center justify-between mb-3">
                   <label className="flex items-center gap-2 text-sm font-medium cursor-pointer">
@@ -186,7 +186,7 @@ export default function ImportResumePage() {
                     Include this entry
                   </label>
                   <select
-                    className="rounded-md border border-leather-200 bg-transparent px-2 py-1 text-xs"
+                    className="input w-auto py-1.5 text-[13px]"
                     value={draft.type}
                     onChange={(e) => updateDraft(i, { type: e.target.value as EntryType })}
                   >
@@ -198,7 +198,7 @@ export default function ImportResumePage() {
                   </select>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid sm:grid-cols-2 gap-3">
                   <input
                     className={inputClass}
                     value={draft.title}
@@ -238,7 +238,7 @@ export default function ImportResumePage() {
                   {draft.bullets.map((bullet, j) => (
                     <div key={j} className="flex gap-2">
                       <textarea
-                        className={`${inputClass} min-h-[2.5rem]`}
+                        className={`${inputClass} min-h-[2.5rem] field-sizing-content`}
                         rows={2}
                         value={bullet}
                         onChange={(e) => {
@@ -251,7 +251,7 @@ export default function ImportResumePage() {
                         onClick={() =>
                           updateDraft(i, { bullets: draft.bullets.filter((_, k) => k !== j) })
                         }
-                        className="text-leather-400 hover:text-red-600 text-sm px-1 shrink-0"
+                        className="btn btn-ghost btn-sm shrink-0 self-start"
                         aria-label="Remove bullet"
                       >
                         ✕
@@ -260,7 +260,7 @@ export default function ImportResumePage() {
                   ))}
                   <button
                     onClick={() => updateDraft(i, { bullets: [...draft.bullets, ""] })}
-                    className="text-sm text-leather-500 hover:text-leather-900"
+                    className="btn btn-ghost btn-sm -ml-2"
                   >
                     + Add bullet
                   </button>
@@ -269,11 +269,11 @@ export default function ImportResumePage() {
             ))}
           </ul>
 
-          <div className="sticky bottom-0 mt-6 py-4 bg-white/95 backdrop-blur border-t border-leather-100 flex items-center gap-3">
+          <div className="sticky bottom-0 mt-6 py-4 bg-leather-50/95 backdrop-blur border-t border-leather-200 flex items-center gap-3">
             <button
               onClick={() => void submit()}
               disabled={submitting || included.length === 0}
-              className="rounded-xl bg-leather-700 text-white px-5 py-2.5 text-sm font-medium disabled:opacity-50 hover:bg-leather-800 transition-colors"
+              className="btn btn-primary"
             >
               {submitting
                 ? "Adding…"

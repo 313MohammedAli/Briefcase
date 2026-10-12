@@ -111,47 +111,47 @@ export default function CoverLetterPanel({
   };
 
   return (
-    <section className="rounded-xl border border-leather-100 p-5">
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-        <h2 className="font-medium">Cover letter</h2>
+    <section className="card">
+      <header className="flex flex-wrap items-center justify-between gap-3 px-6 py-4 border-b border-leather-100">
+        <div className="flex items-center gap-4">
+          <h2 className="font-medium text-leather-900">Cover letter</h2>
+          <div className="seg" role="group" aria-label="Cover letter variant">
+            {COVER_LETTER_VARIANTS.map((v) => (
+              <button
+                key={v}
+                onClick={() => void switchVariant(v)}
+                aria-pressed={v === variant}
+                className="seg-item"
+              >
+                {VARIANT_LABELS[v]}
+              </button>
+            ))}
+          </div>
+        </div>
         <div className="flex items-center gap-2">
           <button
             onClick={() => void exportFile("pdf")}
             disabled={exporting || paragraphs.length === 0}
-            className="rounded-md border border-leather-200 px-3 py-1.5 text-xs disabled:opacity-50"
+            className="btn btn-secondary btn-sm"
           >
             Export PDF
           </button>
           <button
             onClick={() => void exportFile("docx")}
             disabled={exporting || paragraphs.length === 0}
-            className="rounded-md border border-leather-200 px-3 py-1.5 text-xs disabled:opacity-50"
+            className="btn btn-secondary btn-sm"
           >
             Export DOCX
           </button>
         </div>
-      </div>
-
-      <div className="flex gap-1 mb-4 rounded-lg bg-leather-100 p-1 w-fit">
-        {COVER_LETTER_VARIANTS.map((v) => (
-          <button
-            key={v}
-            onClick={() => void switchVariant(v)}
-            className={`rounded-md px-3 py-1.5 text-sm ${
-              v === variant
-                ? "bg-white shadow-sm font-medium"
-                : "text-leather-600"
-            }`}
-          >
-            {VARIANT_LABELS[v]}
-          </button>
-        ))}
-      </div>
+      </header>
 
       {paragraphs.length === 0 ? (
-        <p className="text-sm text-leather-500">No letter generated for this variant yet.</p>
+        <p className="px-6 py-8 text-sm text-leather-500">No letter generated for this variant yet.</p>
       ) : (
-        <div className="space-y-3 max-h-[65vh] overflow-y-auto pr-1">
+        /* The letter reads as a page: serif, a comfortable measure, no inner
+           scroll. Each paragraph is still editable in place. */
+        <div className="sheet px-6 sm:px-10 py-8 max-w-[68ch] space-y-1">
           {paragraphs.map((paragraph, i) => (
             <div key={i} className="group relative">
               <textarea
@@ -162,13 +162,14 @@ export default function CoverLetterPanel({
                   setDraft(next);
                 }}
                 rows={Math.max(2, Math.ceil(paragraph.length / 80))}
-                className="w-full field-sizing-content rounded-md border border-transparent hover:border-leather-100 focus:border-leather-300 bg-transparent px-3 py-2 text-sm leading-relaxed resize-none focus:outline-none"
+                aria-label={`Paragraph ${i + 1}`}
+                className="sheet-field field-sizing-content"
               />
               <button
                 onClick={() => void regenerate(i)}
                 disabled={regenerating !== null}
                 title="Regenerate this paragraph"
-                className="absolute right-1 top-1 opacity-0 group-hover:opacity-100 rounded-md border border-leather-200 bg-white px-2 py-1 text-xs disabled:opacity-50 transition-opacity"
+                className="btn btn-secondary btn-sm absolute -right-2 top-1 font-sans opacity-0 group-hover:opacity-100 focus-visible:opacity-100 [@media(hover:none)]:opacity-100 transition-opacity"
               >
                 {regenerating === i ? "…" : "↻ Regenerate"}
               </button>
@@ -178,20 +179,14 @@ export default function CoverLetterPanel({
       )}
 
       {dirty && (
-        <div className="mt-4 flex gap-2">
-          <button
-            onClick={() => void saveEdits()}
-            disabled={saving}
-            className="rounded-lg bg-leather-700 text-white px-4 py-2 text-sm font-medium disabled:opacity-50"
-          >
+        <div className="flex items-center gap-2 px-6 py-4 border-t border-leather-100 bg-leather-50 rounded-b-[12px]">
+          <button onClick={() => void saveEdits()} disabled={saving} className="btn btn-primary btn-sm">
             {saving ? "Saving…" : "Save edits"}
           </button>
-          <button
-            onClick={() => setDraft(null)}
-            className="rounded-lg border border-leather-200 px-4 py-2 text-sm"
-          >
+          <button onClick={() => setDraft(null)} className="btn btn-ghost btn-sm">
             Discard
           </button>
+          <span className="ml-auto text-xs text-leather-500">Unsaved changes</span>
         </div>
       )}
     </section>

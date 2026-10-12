@@ -1,12 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useApi } from "@/lib/api";
 import type { JobApplication } from "@/lib/types";
-
-const inputClass =
-  "w-full rounded-md border border-leather-200 bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-leather-400";
 
 export default function NewApplicationPage() {
   const { request } = useApi();
@@ -76,25 +74,28 @@ export default function NewApplicationPage() {
 
   return (
     <main className="mx-auto w-full max-w-3xl 2xl:max-w-4xl px-6 py-10">
-      <h1 className="text-2xl font-semibold tracking-tight mb-1">New application</h1>
-      <p className="text-sm text-leather-600 mb-6">
+      <Link href="/applications" className="text-sm text-leather-500 hover:text-leather-800">
+        ← Applications
+      </Link>
+      <h1 className="font-serif text-[34px] leading-tight tracking-tight text-leather-900 mt-3">
+        New application
+      </h1>
+      <p className="text-[15px] text-leather-600 mt-1.5 mb-8 max-w-prose">
         Paste the job posting. Briefcase embeds the description, retrieves your most relevant
         experience, and generates cover letter drafts, a fit score, and an ATS keyword analysis.
       </p>
 
       {error && (
-        <p className="mb-4 rounded-md bg-red-50 text-red-700 px-3 py-2 text-sm">
-          {error}
-        </p>
+        <p className="mb-4 rounded-lg bg-bad-bg text-bad-fg px-3 py-2 text-sm">{error}</p>
       )}
 
-      <div className="mb-6 rounded-xl border border-leather-100 p-4">
-        <label className="text-sm space-y-1 block">
-          <span className="text-leather-600">Paste a job posting URL to auto-fill</span>
+      <div className="card p-5 mb-6">
+        <label className="block">
+          <span className="eyebrow block mb-2">Auto-fill from a URL</span>
           <div className="flex gap-2">
             <input
               type="url"
-              className={inputClass}
+              className="input"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               placeholder="https://company.com/careers/senior-engineer"
@@ -109,59 +110,58 @@ export default function NewApplicationPage() {
               type="button"
               onClick={() => void fetchFromUrl()}
               disabled={fetching}
-              className="shrink-0 rounded-md border border-leather-200 px-4 py-2 text-sm font-medium disabled:opacity-50"
+              className="btn btn-secondary shrink-0"
             >
               {fetching ? "Fetching…" : "Fetch"}
             </button>
           </div>
         </label>
-        <p className="mt-2 text-xs text-leather-400">
-          Works best on direct company career pages. Some job boards block automated access — if
+        <p className="mt-2.5 text-xs text-leather-500">
+          Works best on direct company career pages. Some job boards block automated access; if
           that happens, paste the description below.
         </p>
       </div>
 
       {notice && (
-        <p className="mb-4 rounded-md bg-emerald-50 text-emerald-700 px-3 py-2 text-sm">{notice}</p>
+        <p className="mb-4 rounded-lg bg-good-bg text-good-fg px-3 py-2 text-sm">{notice}</p>
       )}
 
-      <form onSubmit={submit} className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
-          <label className="text-sm space-y-1">
-            <span className="text-leather-600">Job title *</span>
+      <form onSubmit={submit} className="card p-5 space-y-5">
+        <div className="grid sm:grid-cols-2 gap-4">
+          <label className="text-sm space-y-1.5 block">
+            <span className="text-leather-700">Job title</span>
             <input
-              className={inputClass}
+              className="input"
               value={jobTitle}
               onChange={(e) => setJobTitle(e.target.value)}
               placeholder="Senior Backend Engineer"
             />
           </label>
-          <label className="text-sm space-y-1">
-            <span className="text-leather-600">Company *</span>
+          <label className="text-sm space-y-1.5 block">
+            <span className="text-leather-700">Company</span>
             <input
-              className={inputClass}
+              className="input"
               value={company}
               onChange={(e) => setCompany(e.target.value)}
               placeholder="Acme Corp"
             />
           </label>
         </div>
-        <label className="text-sm space-y-1 block">
-          <span className="text-leather-600">Job description *</span>
+        <label className="text-sm space-y-1.5 block">
+          <span className="text-leather-700">Job description</span>
           <textarea
-            className={`${inputClass} min-h-[16rem]`}
+            className="input min-h-[18rem] leading-relaxed"
             value={jobDescription}
             onChange={(e) => setJobDescription(e.target.value)}
             placeholder="Paste the full job description here…"
           />
         </label>
-        <button
-          type="submit"
-          disabled={submitting}
-          className="rounded-lg bg-leather-700 text-white px-5 py-2.5 text-sm font-medium disabled:opacity-50"
-        >
-          {submitting ? "Creating…" : "Create & generate"}
-        </button>
+        <div className="flex items-center gap-3 pt-1">
+          <button type="submit" disabled={submitting} className="btn btn-primary">
+            {submitting ? "Creating…" : "Create & generate"}
+          </button>
+          <span className="text-xs text-leather-500">All three fields are required.</span>
+        </div>
       </form>
     </main>
   );
