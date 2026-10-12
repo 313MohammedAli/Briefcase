@@ -97,7 +97,7 @@ export default function ApplicationsPage() {
           {applications.map((app) => (
             <li
               key={app.id}
-              className="row-link relative grid grid-cols-[minmax(0,1fr)_auto] sm:grid-cols-[minmax(0,1fr)_7.5rem_6rem_auto] items-center gap-x-5 gap-y-1 px-5 py-4 first:rounded-t-[12px] last:rounded-b-[12px]"
+              className="row-link relative grid grid-cols-[minmax(0,1fr)] sm:grid-cols-[minmax(0,1fr)_7.5rem_6rem_auto] items-center gap-x-5 gap-y-2.5 px-5 py-4 first:rounded-t-[12px] last:rounded-b-[12px]"
             >
               {/* Overlay link covers the row for navigation; the status control
                   sits above it as a sibling so it stays interactive. */}
@@ -116,7 +116,8 @@ export default function ApplicationsPage() {
               <span className="hidden sm:flex justify-end pointer-events-none">
                 <FitScoreBadge score={app.match_score} />
               </span>
-              <div className="relative flex items-center gap-2 justify-self-end">
+              {/* Phones: fit + status drop to a second line so the title gets the full width. */}
+              <div className="relative flex items-center gap-2 justify-self-start sm:justify-self-end">
                 <span className="sm:hidden pointer-events-none">
                   <FitScoreBadge score={app.match_score} />
                 </span>

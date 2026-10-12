@@ -113,7 +113,7 @@ export default function CoverLetterPanel({
   return (
     <section className="card">
       <header className="flex flex-wrap items-center justify-between gap-3 px-6 py-4 border-b border-leather-100">
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
           <h2 className="font-medium text-leather-900">Cover letter</h2>
           <div className="seg" role="group" aria-label="Cover letter variant">
             {COVER_LETTER_VARIANTS.map((v) => (
@@ -165,11 +165,14 @@ export default function CoverLetterPanel({
                 aria-label={`Paragraph ${i + 1}`}
                 className="sheet-field field-sizing-content"
               />
+              {/* Pointer devices: revealed on hover at the paragraph's corner.
+                  Touch has no hover, so it sits under the paragraph instead of
+                  covering the text. */}
               <button
                 onClick={() => void regenerate(i)}
                 disabled={regenerating !== null}
                 title="Regenerate this paragraph"
-                className="btn btn-secondary btn-sm absolute -right-2 top-1 font-sans opacity-0 group-hover:opacity-100 focus-visible:opacity-100 [@media(hover:none)]:opacity-100 transition-opacity"
+                className="btn btn-secondary btn-sm absolute -right-2 top-1 font-sans opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity [@media(hover:none)]:static [@media(hover:none)]:opacity-100 [@media(hover:none)]:mt-1 [@media(hover:none)]:mb-3"
               >
                 {regenerating === i ? "…" : "↻ Regenerate"}
               </button>
