@@ -1,10 +1,8 @@
-"""LLM generation for cover letters, resume tailoring, and ATS analysis.
+"""LLM generation for resume tailoring, job extraction, and ATS analysis.
 
 All calls use OPENAI_GENERATION_MODEL with structured JSON output so
-responses parse deterministically. Cover letter variants are produced
-in a single call (per the SRS, to minimize cost/latency), and each
-variant is a list of paragraphs so the UI can regenerate one paragraph
-at a time.
+responses parse deterministically. Cover letter drafting lives in
+common/cover_letters.py and reuses the helpers here.
 """
 
 import json
@@ -14,20 +12,6 @@ from django.conf import settings
 
 from .embeddings import _get_client, embed_texts
 
-COVER_LETTER_VARIANTS = ["concise", "detailed", "enthusiastic"]
-
-# Shared style rules for anything a human will submit under their own name.
-# Kept out of the per-call prompts so all letter generation stays consistent.
-HUMAN_STYLE_RULES = (
-    "Style rules, non-negotiable: write like a person, not a press release. "
-    "Plain, direct sentences with varied length; contractions where natural. "
-    "Never use em dashes or en dashes anywhere. Avoid AI-typical phrasing "
-    "such as 'I am writing to express', 'leverage', 'delve', 'passionate "
-    "about', 'aligns with', 'resonates with', 'testament to', 'showcase', "
-    "'spearheaded', or 'in today's fast-paced world'. State things "
-    "concretely instead of gesturing at enthusiasm."
-)
-
 
 def _strip_dashes(text: str) -> str:
     """Replaces em/en dashes with commas as a hard guarantee behind the prompt.
@@ -36,6 +20,7 @@ def _strip_dashes(text: str) -> str:
     """
     text = re.sub(r"\s*[—–]\s*", ", ", text)
     return re.sub(r",\s*,", ",", text)
+
 
 # Cosine similarity above which an ATS keyword counts as covered by the
 # experience bank (tuned for text-embedding-3-small keyword-vs-bullet pairs).
@@ -62,84 +47,6 @@ def _job_context(job_application) -> str:
         f"Job title: {job_application.job_title}\n"
         f"Company: {job_application.company}\n\n"
         f"Job description:\n{job_application.job_description}"
-    )
-
-
-def generate_cover_letters(
-    job_application, experience_text: str, candidate_name: str = "", personal_statement: str = ""
-) -> dict:
-    """Returns {"concise": [paragraphs], "detailed": [...], "enthusiastic": [...]}."""
-    paragraphs_schema = {"type": "array", "items": {"type": "string"}}
-    schema = {
-        "type": "object",
-        "properties": {v: paragraphs_schema for v in COVER_LETTER_VARIANTS},
-        "required": COVER_LETTER_VARIANTS,
-        "additionalProperties": False,
-    }
-    system = (
-        "You are an expert career writer. Write cover letters that weave the "
-        "candidate's real experience naturally into a narrative aimed at the "
-        "specific job. Never invent experience the candidate does not have. "
-        "Return each letter as an array of paragraphs (greeting and sign-off "
-        "are their own paragraphs). Produce three variants: 'concise' (3-4 "
-        "short paragraphs, direct), 'detailed' (5-6 paragraphs, expands on "
-        "impact and specifics), 'enthusiastic' (4-5 paragraphs, energetic "
-        f"tone, strong motivation for this company). {HUMAN_STYLE_RULES} "
-        "Write in first person as the candidate; never refer to them in the "
-        "third person. Sign off with the candidate's name. If no name is "
-        "given, sign off with the literal placeholder [Your Name] so the "
-        "user can fill it in."
-    )
-    name_line = (
-        f"Candidate name: {candidate_name}"
-        if candidate_name
-        else "Candidate name: not provided (use the [Your Name] placeholder in the sign-off)"
-    )
-    statement_block = (
-        f"\n\nCandidate's personal statement (draw on this for motivation and voice "
-        f"only where it strengthens the letter; do not force it in):\n{personal_statement}"
-        if personal_statement.strip()
-        else ""
-    )
-    user = (
-        f"{_job_context(job_application)}\n\n"
-        f"{name_line}\n\n"
-        f"Candidate's relevant experience:\n{experience_text}"
-        f"{statement_block}"
-    )
-    letters = _structured_call(system, user, "cover_letter_variants", schema)
-    return {
-        variant: [_strip_dashes(p) for p in paragraphs]
-        for variant, paragraphs in letters.items()
-    }
-
-
-def regenerate_paragraph(
-    job_application, variant: str, paragraphs: list[str], index: int, experience_text: str
-) -> str:
-    """Rewrites one paragraph of a cover letter, keeping the rest as context."""
-    schema = {
-        "type": "object",
-        "properties": {"paragraph": {"type": "string"}},
-        "required": ["paragraph"],
-        "additionalProperties": False,
-    }
-    numbered = "\n\n".join(f"[{i}] {p}" for i, p in enumerate(paragraphs))
-    system = (
-        "You are an expert career writer editing one paragraph of an existing "
-        f"cover letter written in a {variant} tone. Rewrite ONLY the requested "
-        "paragraph with a fresh take that still flows with the surrounding "
-        "paragraphs, keeps the same tone, and stays truthful to the "
-        f"candidate's experience. {HUMAN_STYLE_RULES}"
-    )
-    user = (
-        f"{_job_context(job_application)}\n\n"
-        f"Candidate's relevant experience:\n{experience_text}\n\n"
-        f"Current letter (numbered paragraphs):\n{numbered}\n\n"
-        f"Rewrite paragraph [{index}]."
-    )
-    return _strip_dashes(
-        _structured_call(system, user, "regenerated_paragraph", schema)["paragraph"]
     )
 
 

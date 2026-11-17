@@ -4,14 +4,20 @@ import Link from "next/link";
 import { use, useCallback, useEffect, useRef, useState } from "react";
 import { useApi } from "@/lib/api";
 import type { ApplicationStatus, JobApplication } from "@/lib/types";
-import CoverLetterPanel from "@/components/CoverLetterPanel";
+import CoverLetterPanel from "@/components/cover-letter/CoverLetterPanel";
 import FitScoreBadge from "@/components/FitScoreBadge";
 import KeywordGapPanel from "@/components/KeywordGapPanel";
 import ResumePanel from "@/components/ResumePanel";
 import StatusSelect from "@/components/StatusSelect";
 
-function hasCoverLetters(app: JobApplication): boolean {
-  return Object.values(app.generated_cover_letters ?? {}).some((p) => p && p.length > 0);
+/** Anything generated yet: a draft, a fit score, or an ATS analysis. */
+function hasResults(app: JobApplication): boolean {
+  const gap = app.keyword_gap_analysis ?? {};
+  return (
+    (app.cover_letter_drafts?.length ?? 0) > 0 ||
+    app.match_score !== null ||
+    (gap.matched?.length ?? 0) + (gap.missing?.length ?? 0) > 0
+  );
 }
 
 export default function ApplicationDetailPage({
@@ -27,12 +33,15 @@ export default function ApplicationDetailPage({
   const [showDescription, setShowDescription] = useState(false);
   const generateStarted = useRef(false);
 
-  const generate = useCallback(async () => {
+  // First run: fit score, ATS analysis, and a first draft in the suggested
+  // template. Later runs (includeDraft = false) only refresh the analysis.
+  const generate = useCallback(async (includeDraft = true) => {
     setGenerating(true);
     setError(null);
     try {
       const updated = await request<JobApplication>(`/job-applications/${id}/generate/`, {
         method: "POST",
+        body: JSON.stringify({ include_draft: includeDraft }),
       });
       setApplication(updated);
     } catch (e) {
@@ -50,7 +59,7 @@ export default function ApplicationDetailPage({
         if (cancelled) return;
         setApplication(app);
         // Fresh application: kick off generation automatically, once.
-        if (!hasCoverLetters(app) && !generateStarted.current) {
+        if (!hasResults(app) && !generateStarted.current) {
           generateStarted.current = true;
           void generate();
         }
@@ -122,23 +131,24 @@ export default function ApplicationDetailPage({
             </pre>
           )}
 
-          {generating && (
+          {generating && !hasResults(application) && (
             <div className="card p-10 text-center">
               <p className="font-serif text-xl text-leather-900 animate-pulse">
-                Writing your cover letters…
+                Writing your first draft…
               </p>
               <p className="text-sm text-leather-600 mt-1.5">
-                Retrieving your most relevant experience, scoring the fit, and drafting three
-                variants. This usually takes about 15 seconds.
+                Retrieving your most relevant experience, scoring the fit, checking ATS keywords, and
+                drafting a cover letter. This usually takes about 15 seconds.
               </p>
             </div>
           )}
 
-          {!generating && !hasCoverLetters(application) && (
+          {!generating && !hasResults(application) && (
             <div className="rounded-xl border border-dashed border-leather-200 p-10 text-center">
               <p className="font-serif text-xl text-leather-900">Nothing generated yet</p>
               <p className="text-sm text-leather-600 mt-1.5 mb-5">
-                Generate cover letters, a fit score, and an ATS keyword analysis for this posting.
+                Generate a cover letter draft, a fit score, and an ATS keyword analysis for this
+                posting.
               </p>
               <button onClick={() => void generate()} className="btn btn-primary">
                 Generate
@@ -146,17 +156,13 @@ export default function ApplicationDetailPage({
             </div>
           )}
 
-          {hasCoverLetters(application) &&
+          {hasResults(application) &&
             (() => {
               const gap = application.keyword_gap_analysis ?? {};
               const hasAts = (gap.matched?.length ?? 0) + (gap.missing?.length ?? 0) > 0;
               const documents = (
                 <div className="space-y-6 min-w-0">
-                  <CoverLetterPanel
-                    application={application}
-                    onChange={setApplication}
-                    onError={setError}
-                  />
+                  <CoverLetterPanel application={application} onChange={setApplication} />
                   <ResumePanel
                     application={application}
                     onChange={setApplication}
@@ -164,12 +170,12 @@ export default function ApplicationDetailPage({
                   />
                   <div className="flex justify-end">
                     <button
-                      onClick={() => void generate()}
+                      onClick={() => void generate(false)}
                       disabled={generating}
                       className="btn btn-ghost btn-sm"
-                      title="Re-run retrieval, cover letters, fit score, and ATS analysis. Overwrites manual cover letter edits."
+                      title="Re-score the fit and re-check ATS keywords against your current experience bank. Your drafts stay as they are."
                     >
-                      ↻ Regenerate everything
+                      {generating ? "Refreshing analysis…" : "↻ Refresh fit score & keywords"}
                     </button>
                   </div>
                 </div>

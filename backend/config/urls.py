@@ -5,7 +5,7 @@ from rest_framework.routers import DefaultRouter
 
 from accounts.views import ProfileView
 from experience_bank.views import ExperienceEntryViewSet
-from job_applications.views import JobApplicationViewSet
+from job_applications.views import CoverLetterOptionsView, JobApplicationViewSet
 
 router = DefaultRouter()
 router.register("experience-entries", ExperienceEntryViewSet, basename="experience-entry")
@@ -15,5 +15,10 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/health/", lambda request: JsonResponse({"status": "ok"})),
     path("api/profile/", ProfileView.as_view(), name="profile"),
+    path(
+        "api/cover-letter-options/",
+        CoverLetterOptionsView.as_view(),
+        name="cover-letter-options",
+    ),
     path("api/", include(router.urls)),
 ]

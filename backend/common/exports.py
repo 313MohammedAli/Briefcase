@@ -30,7 +30,8 @@ def cover_letter_pdf(job_application, paragraphs: list[str]) -> bytes:
     body = (
         f"<h1>{escape(job_application.job_title)}</h1>"
         f"<p class='subtitle'>{escape(job_application.company)}</p>"
-        + "".join(f"<p>{escape(p)}</p>" for p in paragraphs)
+        # Sign-offs carry a line break ("Best regards,\nName").
+        + "".join(f"<p>{escape(p).replace(chr(10), '<br>')}</p>" for p in paragraphs)
     )
     return _pdf_from_body(body)
 

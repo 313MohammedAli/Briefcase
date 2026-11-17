@@ -161,6 +161,8 @@ REST_FRAMEWORK = {
     "DEFAULT_THROTTLE_CLASSES": [
         "rest_framework.throttling.UserRateThrottle",
     ],
+    # Maps OpenAI failures (outage, exhausted quota) to clean 502/503s.
+    "EXCEPTION_HANDLER": "common.exceptions.api_exception_handler",
     "DEFAULT_THROTTLE_RATES": {
         "user": os.environ.get("THROTTLE_USER", "300/hour"),
         "ai": os.environ.get("THROTTLE_AI", "30/hour"),

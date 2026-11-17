@@ -24,10 +24,13 @@ class JobApplication(models.Model):
         dimensions=settings.EMBEDDING_DIMENSIONS, null=True, blank=True
     )
 
-    # Paragraph arrays per variant, so the UI can regenerate one paragraph
-    # at a time: {"concise": ["...", ...], "detailed": [...], "enthusiastic": [...]}
-    generated_cover_letters = models.JSONField(default=dict, blank=True)
-    selected_variant = models.CharField(max_length=20, blank=True)
+    # Cover letter drafts, newest last. Each is a dict built by
+    # common.cover_letters.new_draft(): {"id", "template", "tone", "length",
+    # "focus", "inputs", "mirror_keywords", "label", "paragraphs",
+    # "coverage", "edited", "created_at"}. Paragraphs are separate strings so
+    # the UI can rewrite one at a time.
+    cover_letter_drafts = models.JSONField(default=list, blank=True)
+    selected_draft = models.CharField(max_length=32, blank=True)
 
     # Editable/exportable tailored resume content.
     tailored_resume = models.JSONField(default=dict, blank=True)
@@ -48,3 +51,12 @@ class JobApplication(models.Model):
 
     def __str__(self):
         return f"{self.job_title} @ {self.company}"
+
+    def get_draft(self, draft_id: str | None) -> dict | None:
+        """The draft with this id, else the selected one, else the newest."""
+        drafts = self.cover_letter_drafts or []
+        wanted = draft_id or self.selected_draft
+        for draft in drafts:
+            if draft.get("id") == wanted:
+                return draft
+        return None if draft_id else (drafts[-1] if drafts else None)

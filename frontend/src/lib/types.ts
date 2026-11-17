@@ -33,13 +33,62 @@ export interface Profile {
   resume_uploaded_at: string | null;
 }
 
-export type CoverLetterVariant = "concise" | "detailed" | "enthusiastic";
+/** Free-text notes the candidate gives the builder (all optional). */
+export interface CoverLetterInputs {
+  recipient: string;
+  why_company: string;
+  highlight: string;
+  referral: string;
+  context: string;
+  instructions: string;
+}
 
-export const COVER_LETTER_VARIANTS: CoverLetterVariant[] = [
-  "concise",
-  "detailed",
-  "enthusiastic",
-];
+export interface CoverLetterSettings {
+  template: string;
+  tone: string;
+  length: string;
+  focus: string[];
+  inputs: CoverLetterInputs;
+  mirror_keywords: boolean;
+}
+
+export interface CoverLetterDraft extends CoverLetterSettings {
+  id: string;
+  /** Set for drafts carried over from the old fixed variants. */
+  label: string;
+  paragraphs: string[];
+  /** Requirement -> evidence pairs the draft argues. Empty for old drafts. */
+  coverage: { requirement: string; evidence: string }[];
+  /** True once the candidate has saved their own edits. */
+  edited: boolean;
+  created_at: string;
+}
+
+/** Served by /cover-letter-options/; the backend is the source of truth. */
+export interface CoverLetterOptions {
+  templates: {
+    key: string;
+    name: string;
+    tagline: string;
+    best_for: string;
+    beats: string[];
+    lengths: string[];
+    requires: (keyof CoverLetterInputs)[];
+  }[];
+  tones: { key: string; name: string; description: string }[];
+  lengths: { key: string; name: string; min_words: number; max_words: number }[];
+  focuses: { key: string; name: string }[];
+  rewrite_modes: { key: string; name: string }[];
+  cliches: string[];
+  stock_openers: string[];
+  limits: {
+    max_focus: number;
+    max_drafts: number;
+    inputs: Record<keyof CoverLetterInputs, number>;
+    custom_rewrite: number;
+  };
+  defaults: CoverLetterSettings;
+}
 
 export type ApplicationStatus = "applied" | "interview" | "rejected" | "offer";
 
@@ -67,8 +116,9 @@ export interface JobApplication {
   job_title: string;
   company: string;
   job_description: string;
-  generated_cover_letters: Partial<Record<CoverLetterVariant, string[]>>;
-  selected_variant: CoverLetterVariant | "";
+  cover_letter_drafts: CoverLetterDraft[];
+  selected_draft: string;
+  recommended_template: string;
   tailored_resume: TailoredResume;
   match_score: number | null;
   keyword_gap_analysis: { matched?: string[]; missing?: string[] };
